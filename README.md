@@ -1,157 +1,101 @@
 # build-with-ai
 
-> An open-source, zero-API CLI in plain JavaScript that guides beginners through building software projects with any AI by giving them the right prompt at each step.
+> An open-source, zero-API CLI that guides developers through building complete software projects with any AI by generating context-aware, copy-ready prompts at each step.
 
-[![npm version](https://img.shields.io/badge/npm-v1.0.0-blue.svg)](https://npmjs.com/package/build-with-ai)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Zero-API](https://img.shields.io/badge/AI_API-None_(100%25_Local)-orange.svg)](README.md)
-
----
-
-## Why `build-with-ai`?
-
-Most beginners struggle to build real software with AI because they don't know:
-- **What to ask next** (missing architectural phases)
-- **How to prompt effectively** (getting overwhelmed by generic AI responses)
-- **How to carry context forward** (forgetting earlier tech choices and database models)
-
-**`build-with-ai` is your step-by-step orchestrator:**
-- **Zero API keys or accounts:** Works locally with any AI model (ChatGPT, Claude, Gemini, DeepSeek, Cursor, Copilot, etc.).
-- **Automatic context injection:** Every decision you make (database, framework, auth strategy) is automatically injected into future step prompts.
-- **Copy-to-clipboard:** Prompts are formatted and copied to your clipboard instantly.
-- **Never touches your source code:** Only manages workflow guidance inside a `.buildwithai/` folder.
+[![npm version](https://img.shields.io/npm/v/build-with-ai.svg)](https://www.npmjs.com/package/build-with-ai)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Zero API Keys](https://img.shields.io/badge/AI_API-None_(100%25_Local)-green.svg)](README.md)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Kaap10/build-with-ai/pulls)
 
 ---
 
-## Installation & Quickstart
+## Why build-with-ai?
 
-You can run it directly with `npx` or install globally:
+Most developers get stuck when building projects with AI because they miss architectural steps or lose context across chat sessions.
+
+`build-with-ai` solves this locally:
+- **Zero API keys or accounts:** Works with any AI (ChatGPT, Claude, Gemini, Cursor, Copilot, DeepSeek, Local LLMs).
+- **Automatic context injection:** Early architectural choices (database, frontend, auth) are automatically carried into future prompts.
+- **Copy-to-clipboard:** Formats and copies prompts instantly.
+- **Safe:** Never touches your source code; keeps all workflow state in `.buildwithai/`.
+
+---
+
+## Quickstart
+
+Run directly with `npx` (no install required):
 
 ```bash
-# Run directly with npx
 npx build-with-ai
+```
 
-# Or install globally
+Or install globally:
+
+```bash
 npm install -g build-with-ai
 ```
 
 ---
 
-## Commands Reference
+## How It Works
 
-### 1. `npx build-with-ai` (No Subcommand)
-- If `.buildwithai/` exists in the current folder: Displays quick progress and lets you jump straight to `next`, `resume`, `status`, or `export`.
-- If not initialized: Offers to run the interactive project setup (`init`).
+1. **`npx build-with-ai next`** -> Generates the next step prompt with your project context and copies it to clipboard.
+2. **Consult your AI** -> Paste into your AI tool and implement the step.
+3. **`npx build-with-ai done`** -> Saves key architectural decisions into `context.json` and advances.
 
-### 2. `npx build-with-ai init`
-Starts the interactive wizard to set up your project:
-- Choose from built-in templates (e.g. Full-Stack Web Application, Backend REST API).
-- Set your experience level (Beginner, Intermediate, Experienced).
-- Name your project and describe your one-line idea.
-- Creates `.buildwithai/` with `state.json`, `context.json`, and empty `history/`.
+---
 
-### 3. `npx build-with-ai next`
-- Loads your current step from the selected template.
-- Dynamically resolves `{{dot.notation}}` placeholders against `context.json` (e.g. `{{decisions.database}}`).
-- Automatically checks prerequisites (`requires`) and flags any missing decisions.
-- Formats the step:
-  ```text
-  STEP X/N — <title>
+## Commands
 
-  WHY THIS STEP: <goal>
-  WHAT AI SHOULD PRODUCE: <expectedOutput>
-
-  <the actual generated prompt>
-  ```
-- Automatically copies the prompt to your clipboard and confirms with `Prompt copied to clipboard`.
-
-### 4. `npx build-with-ai done`
-- Prompts you to record the outcome of the step:
-  - **Enter short decisions:** Saved to `context.json` under the step's `writes` keys for future prompt injection.
-  - **Paste full AI response:** Saved as markdown to `.buildwithai/history/step-XX.md`.
-  - **Skip saving details:** Just marks the step complete.
-- Non-blocking confirmation check for expected outcomes.
-- Advances `currentStep` to the next phase.
-
-### 5. `npx build-with-ai back`
-- Decrements the active step number so you can revisit an earlier step.
-- History files and recorded decisions are safely preserved.
-
-### 6. `npx build-with-ai status`
-- Shows project name, template, visual progress bar (`[████████░░] 60%`), completed/current/upcoming step checklist, and all recorded decisions.
-
-### 7. `npx build-with-ai resume`
-- Displays a clean "Welcome Back" overview with current focus, goal, progress, and next steps.
-
-### 8. `npx build-with-ai export`
-Generates comprehensive project documentation:
-- `README.md` — Deterministic setup and overview populated from `context.json`.
-- `BUILD_LOG.md` — Complete chronological build history from all saved `history/step-XX.md` files.
-- `.buildwithai/CONTEXT.md` — Regenerable markdown view of `context.json`.
-
-### 9. `npx build-with-ai list`
-- Lists all available templates in `templates/*.json` with their titles and step counts.
-
-### 10. `npx build-with-ai reset`
-- Prompts for confirmation and resets `.buildwithai/`.
-- Never touches or deletes your user source code files.
+| Command | Description |
+| :--- | :--- |
+| `npx build-with-ai` | Smart launcher (opens action menu or starts init). |
+| `npx build-with-ai init` | Starts interactive onboarding wizard (template, experience, project idea). |
+| `npx build-with-ai next` | Generates and copies the prompt for the active step. |
+| `npx build-with-ai done` | Records decisions, soft-checks outcomes, and advances step. |
+| `npx build-with-ai back` | Moves to previous step without deleting history. |
+| `npx build-with-ai status` | Displays visual progress bar, step checklist, and recorded decisions. |
+| `npx build-with-ai resume` | Welcome-back dashboard summarizing current focus and progress. |
+| `npx build-with-ai export` | Generates `README.md`, `BUILD_LOG.md`, and `.buildwithai/CONTEXT.md`. |
+| `npx build-with-ai list` | Lists all available templates and step counts. |
+| `npx build-with-ai reset` | Resets workflow state in `.buildwithai/` (never touches user code). |
 
 ---
 
 ## Architecture & Storage
 
-```
+All workflow state lives in a `.buildwithai/` folder in your project root:
+
+```text
 my-project/
 ├── .buildwithai/
-│   ├── state.json        # Progress, currentStep, completedSteps (no large text)
+│   ├── state.json        # Workflow progress and active step index
 │   ├── context.json      # Structured decisions store (single source of truth)
-│   ├── CONTEXT.md        # Generated readable view of context.json
-│   └── history/          # Raw AI responses
-│       ├── step-01.md
-│       ├── step-02.md
-│       └── ...
+│   ├── CONTEXT.md        # Regenerable markdown view of context.json
+│   └── history/          # Archived raw AI responses (step-01.md, ...)
 ├── src/                  # Your application code (untouched by CLI)
 ├── README.md             # Generated on export
 └── BUILD_LOG.md          # Generated on export
 ```
 
-### Separation Rules
-1. **`state.json`**: Minimal workflow state (step index, timestamps, completed array).
-2. **`context.json`**: Structured key-value decisions (e.g. `decisions.database = "PostgreSQL"`).
-3. **`history/`**: Raw markdown logs of AI responses.
-4. **`CONTEXT.md`**: Generated view of `context.json` only (re-generable anytime).
-
 ---
 
-## Example Walkthrough: "Rahul builds an Expense Tracker"
+## Open Source & Contributing
 
-Here is how a beginner (Rahul) uses `build-with-ai` to build a complete full-stack web application:
+Contributions are welcome. You can help by:
+- Adding new workflow templates (e.g. CLI tools, mobile apps, extensions) in `templates/*.json`.
+- Refining existing prompts and step definitions.
+- Reporting issues and suggesting enhancements.
 
-1. **Initialize Project:**
-   ```bash
-   mkdir expense-tracker && cd expense-tracker
-   npx build-with-ai init
-   ```
-   Rahul selects `web-app` template, sets experience to `Beginner`, enters name `Expense Tracker`, and idea `A minimalist receipt and expense manager for freelancers`.
+### Local Development
 
-2. **Step 1 — Problem Discovery:**
-   Rahul runs `npx build-with-ai next`. The prompt is copied to his clipboard. He pastes it into Claude/ChatGPT.
-   The AI responds with target audience and value proposition.
-   Rahul runs `npx build-with-ai done`, enters the value proposition, and the step completes.
-
-3. **Step 3 — Tech Stack:**
-   When Rahul reaches Step 3, the CLI automatically generates:
-   > *"My experience level is Beginner and my project 'Expense Tracker' requires these MVP features: [Logged from Step 2]. Recommend a modern tech stack..."*
-   Rahul chooses `Next.js`, `Tailwind CSS`, and `SQLite with Prisma`. He records these in `done`.
-
-4. **Step 5 — Database Schema:**
-   The CLI automatically references his chosen database:
-   > *"For 'Expense Tracker' using SQLite with Prisma, please design the database schema..."*
-   No need to remind the AI what database or project was picked—context is seamlessly threaded.
-
-5. **Exporting Portfolio Documentation:**
-   Once finished, Rahul runs `npx build-with-ai export`.
-   He instantly gets a structured `README.md`, a complete `BUILD_LOG.md` tracking every design decision, and a portfolio-ready pitch.
+```bash
+git clone https://github.com/Kaap10/build-with-ai.git
+cd build-with-ai
+npm install
+npm test
+npm link
+```
 
 ---
 
