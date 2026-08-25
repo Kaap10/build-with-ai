@@ -80,12 +80,14 @@ my-project/
 
 ---
 
-## Open Source & Contributing
+## Open Source
 
-Contributions are welcome. You can help by:
-- Adding new workflow templates (e.g. CLI tools, mobile apps, extensions) in `templates/*.json`.
-- Refining existing prompts and step definitions.
-- Reporting issues and suggesting enhancements.
+build-with-ai is free and open source under the MIT License.
+
+Contributions, new project templates, bug reports, and improvements
+are welcome.
+
+GitHub: https://github.com/Kaap10/build-with-ai
 
 ### Local Development
 
