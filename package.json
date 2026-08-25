@@ -1,0 +1,33 @@
+{
+  "name": "build-with-ai",
+  "version": "1.0.0",
+  "description": "A minimal, zero-API CLI that guides beginners through building software with any AI by giving them the right prompt at each step.",
+  "bin": {
+    "build-with-ai": "./bin/cli.js"
+  },
+  "main": "bin/cli.js",
+  "scripts": {
+    "test": "node tests/test-flow.js",
+    "test:e2e": "node tests/e2e-test.js"
+  },
+  "keywords": [
+    "ai",
+    "cli",
+    "prompt-engineering",
+    "developer-tools",
+    "workflow",
+    "scaffolding",
+    "guide"
+  ],
+  "author": "build-with-ai contributors",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "clipboardy": "^3.0.0",
+    "commander": "^12.1.0",
+    "inquirer": "^8.2.6",
+    "picocolors": "^1.1.1"
+  }
+}

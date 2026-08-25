@@ -1,0 +1,238 @@
+{
+  "type": "web-app",
+  "title": "Full-Stack Web Application",
+  "description": "A comprehensive end-to-end workflow to plan, build, test, and deploy a full-stack web application.",
+  "steps": [
+    {
+      "id": "step-01-discovery",
+      "phase": "Discovery",
+      "title": "Problem Discovery & Core Value Proposition",
+      "goal": "Clarify the target user, the pain point being addressed, and the core outcome the product achieves.",
+      "requires": ["project.name", "project.idea"],
+      "writes": ["decisions.targetAudience", "decisions.coreValueProp"],
+      "expectedOutput": "A concise problem statement, primary user persona, and clear unique value proposition.",
+      "prompt": "I am building a web project called \"{{project.name}}\".\nThe concept is: {{project.idea}}.\nMy experience level is {{project.experienceLevel}}.\n\nPlease act as a Principal Product Architect and help me refine this idea:\n1. Define the primary target audience and user persona.\n2. Summarize the core pain point this user faces today.\n3. Formulate a crisp 2-sentence Value Proposition explaining how this app solves that pain point.\n4. List 3 key metrics that would define whether this project succeeds."
+    },
+    {
+      "id": "step-02-mvp-scope",
+      "phase": "Requirements",
+      "title": "MVP Feature Scoping & Non-Goals",
+      "goal": "Separate essential must-have features from nice-to-have items to keep initial development focused and achievable.",
+      "requires": ["decisions.coreValueProp"],
+      "writes": ["decisions.mvpFeatures", "decisions.nonGoals"],
+      "expectedOutput": "A prioritized list of 3-5 core MVP user stories and an explicit list of non-goals (deferred features).",
+      "prompt": "Based on our core value proposition:\n\"{{decisions.coreValueProp}}\"\n\nHelp me define the minimum viable product (MVP) scope for \"{{project.name}}\":\n1. List exactly 3 to 5 non-negotiable MVP features (user stories in 'As a [user], I want to [action] so that [benefit]' format).\n2. List 3 to 5 features that are tempting but should explicitly be NON-GOALS for V1.\n3. Outline the single core user flow from first visit to value delivery."
+    },
+    {
+      "id": "step-03-tech-stack",
+      "phase": "Tech Stack",
+      "title": "Technology Stack Selection",
+      "goal": "Choose modern, beginner-friendly, and maintainable technologies tailored to the developer's experience level.",
+      "requires": ["project.experienceLevel", "decisions.mvpFeatures"],
+      "writes": ["decisions.frontendStack", "decisions.backendStack", "decisions.database"],
+      "expectedOutput": "Selected frontend framework, backend framework/runtime, database, styling solution, and hosting targets.",
+      "prompt": "My experience level is {{project.experienceLevel}} and my project \"{{project.name}}\" requires these MVP features:\n{{decisions.mvpFeatures}}\n\nRecommend a modern, cohesive tech stack with minimal friction:\n1. Frontend framework & styling approach (e.g. Next.js / React + Tailwind CSS).\n2. Backend / API solution (e.g. Node.js Express / Next.js Route Handlers / Fastify).\n3. Database (e.g. SQLite for local / PostgreSQL with Prisma or Drizzle ORM).\n4. Justification for why this stack fits a {{project.experienceLevel}} developer and avoids over-engineering."
+    },
+    {
+      "id": "step-04-architecture",
+      "phase": "Architecture",
+      "title": "System Architecture & High-Level Design",
+      "goal": "Establish folder structure, data flow, client-server communication model, and component boundaries.",
+      "requires": ["decisions.frontendStack", "decisions.backendStack", "decisions.database"],
+      "writes": ["decisions.architecturePattern", "decisions.folderStructure"],
+      "expectedOutput": "A clean directory structure breakdown and component interaction diagram/flow.",
+      "prompt": "We have chosen the following tech stack for \"{{project.name}}\":\n- Frontend: {{decisions.frontendStack}}\n- Backend: {{decisions.backendStack}}\n- Database: {{decisions.database}}\n\nPlease design the system architecture:\n1. Provide the recommended directory and file layout.\n2. Detail the data flow from client UI interaction down to database persistence and back.\n3. Outline separation of concerns (presentation, business logic, data access layer)."
+    },
+    {
+      "id": "step-05-database-schema",
+      "phase": "Database",
+      "title": "Database Schema & Entity Relationships",
+      "goal": "Design table structures, data types, primary/foreign keys, and indexes necessary for MVP features.",
+      "requires": ["decisions.database", "decisions.mvpFeatures"],
+      "writes": ["decisions.dataModels"],
+      "expectedOutput": "Complete database schema (SQL DDL or ORM models like Prisma/Drizzle) with relations and constraints.",
+      "prompt": "For \"{{project.name}}\" using {{decisions.database}} to support:\n{{decisions.mvpFeatures}}\n\nPlease provide:\n1. The complete database schema (in SQL or ORM schema format).\n2. Primary keys, foreign keys, cascade rules, and indexing strategy.\n3. Sample seed data for 2-3 realistic records per entity to help with local development."
+    },
+    {
+      "id": "step-06-api-design",
+      "phase": "API",
+      "title": "REST API Endpoints & Request/Response Contracts",
+      "goal": "Define RESTful routes, HTTP verbs, payload schemas, query params, and status codes.",
+      "requires": ["decisions.dataModels"],
+      "writes": ["decisions.apiEndpoints"],
+      "expectedOutput": "A clean API contract table including endpoint paths, methods, request bodies, and JSON responses.",
+      "prompt": "Based on our data models for \"{{project.name}}\":\n{{decisions.dataModels}}\n\nPlease define the API endpoints:\n1. Specify the REST routes (Method, Path, Query Params, Request Body JSON, Response Body JSON, Error Codes).\n2. Include endpoints for CRUD operations and any specialized business actions.\n3. Define standard error response format (e.g. { error: string, details?: any })."
+    },
+    {
+      "id": "step-07-project-scaffolding",
+      "phase": "Setup",
+      "title": "Project Scaffolding & Environment Setup",
+      "goal": "Initialize the codebase, configure package manager, install dependencies, and create environment variables.",
+      "requires": ["decisions.frontendStack", "decisions.backendStack", "decisions.database"],
+      "writes": ["decisions.envVariables"],
+      "expectedOutput": "Step-by-step terminal commands to create the project, install packages, and create `.env.example`.",
+      "prompt": "Provide exact terminal commands to scaffold \"{{project.name}}\" from scratch using {{decisions.frontendStack}}, {{decisions.backendStack}}, and {{decisions.database}}:\n1. Project initialization command (e.g. npm init / create-next-app / npx create-...).\n2. Exact `npm install` commands for runtime dependencies and devDependencies.\n3. Complete `.env.example` file with required environment variables and placeholders.\n4. Script commands in package.json (dev, build, start, lint)."
+    },
+    {
+      "id": "step-08-database-setup",
+      "phase": "Setup",
+      "title": "Database Connection & Migration Setup",
+      "goal": "Implement the database client connection pool, run initial migrations, and verify connectivity.",
+      "requires": ["decisions.database", "decisions.dataModels"],
+      "writes": ["decisions.dbClientFile"],
+      "expectedOutput": "Database connection helper code, migration scripts, and a health-check script.",
+      "prompt": "Let's set up the database layer for \"{{project.name}}\" using {{decisions.database}}:\n1. Provide the database connection file (e.g. `lib/db.js` or `db/client.ts`).\n2. Migration file or initialization script to create tables from our schema.\n3. A simple seed script (`npm run seed`) to populate initial dummy data."
+    },
+    {
+      "id": "step-09-ui-design-system",
+      "phase": "Frontend",
+      "title": "Design System, Colors & Layout Shell",
+      "goal": "Build the global layout, navigation bar, footer, responsive grid, color palette, and typography.",
+      "requires": ["project.name", "decisions.frontendStack"],
+      "writes": ["decisions.uiLayout"],
+      "expectedOutput": "Global layout component, Navbar, responsive container, and consistent theme styling.",
+      "prompt": "Create the root layout and visual styling for \"{{project.name}}\" using {{decisions.frontendStack}}:\n1. Theme configuration (modern, clean color palette: primary, neutral, background, text, alerts).\n2. Main App Layout component with responsive Header/Navbar (logo, navigation links, user action) and Footer.\n3. Notification/Toast or alert banner container component."
+    },
+    {
+      "id": "step-10-auth-setup",
+      "phase": "Authentication",
+      "title": "Authentication & Session Management",
+      "goal": "Implement secure user signup, login, session/token management, and protected route wrappers.",
+      "requires": ["decisions.backendStack", "decisions.database"],
+      "writes": ["decisions.authStrategy"],
+      "expectedOutput": "Password hashing, JWT / session cookies, register/login endpoints, and auth middleware.",
+      "prompt": "Implement authentication for \"{{project.name}}\":\n1. Explain the chosen auth strategy (e.g. session cookies / JWT / Auth0 / NextAuth / Supabase Auth).\n2. Backend route handlers for `/api/auth/register`, `/api/auth/login`, and `/api/auth/me`.\n3. Authentication middleware / helper to protect private routes.\n4. Password security: bcrypt hashing and input validation."
+    },
+    {
+      "id": "step-11-auth-ui",
+      "phase": "Frontend",
+      "title": "Authentication UI (Sign In & Sign Up Forms)",
+      "goal": "Build client-side registration and login screens with validation and error messaging.",
+      "requires": ["decisions.authStrategy", "decisions.frontendStack"],
+      "writes": ["decisions.authUI"],
+      "expectedOutput": "Accessible login and signup form components with loading states and error toasts.",
+      "prompt": "Build the client-side authentication screens for \"{{project.name}}\":\n1. Sign In and Sign Up form components with validation (email format, password length).\n2. Loading state during submission and clear inline error messages if credentials fail.\n3. Client-side authentication context or state hook (e.g. `useAuth()`)."
+    },
+    {
+      "id": "step-12-backend-crud",
+      "phase": "Backend",
+      "title": "Core Resource Backend Endpoints (CRUD)",
+      "goal": "Implement backend controller logic, input validation, and database queries for the primary MVP resource.",
+      "requires": ["decisions.apiEndpoints", "decisions.dataModels", "decisions.dbClientFile"],
+      "writes": ["decisions.coreApiCode"],
+      "expectedOutput": "Clean API route handlers with request sanitization, error handling, and database operations.",
+      "prompt": "Implement the core backend API routes for \"{{project.name}}\" based on our endpoints:\n{{decisions.apiEndpoints}}\n\n1. Complete handler code for Create, Read, Update, Delete operations.\n2. Request body validation (sanitizing inputs, checking required fields).\n3. Try/catch blocks with appropriate HTTP status codes (200, 201, 400, 404, 500)."
+    },
+    {
+      "id": "step-13-frontend-data-input",
+      "phase": "Frontend",
+      "title": "Primary User Input Form & Creation Flow",
+      "goal": "Build the UI form where users create or submit data for the main feature.",
+      "requires": ["decisions.coreApiCode", "decisions.frontendStack"],
+      "writes": ["decisions.creationFormUI"],
+      "expectedOutput": "Interactive form component with client-side validation, submit handler, and optimistic updates or toast feedback.",
+      "prompt": "Build the primary creation/input component for \"{{project.name}}\":\n1. Form component fields matching our data schema.\n2. Async submit handler calling the backend API endpoint.\n3. Input validation, disabled state while submitting, and success notification."
+    },
+    {
+      "id": "step-14-frontend-data-display",
+      "phase": "Frontend",
+      "title": "Data Listing, Cards & Empty States",
+      "goal": "Display records fetched from the backend in an organized grid or list with loading skeletons and empty states.",
+      "requires": ["decisions.coreApiCode", "decisions.frontendStack"],
+      "writes": ["decisions.listUI"],
+      "expectedOutput": "List/Grid component, item card component, skeleton loading state, and empty state placeholder.",
+      "prompt": "Build the data listing and item display view for \"{{project.name}}\":\n1. Main list/grid view component fetching data from the API.\n2. Individual item card or row with actions (Edit, Delete, View Details).\n3. Skeleton loader for pending requests.\n4. Empty state component with an action button when no records exist."
+    },
+    {
+      "id": "step-15-frontend-filtering",
+      "phase": "Frontend",
+      "title": "Filtering, Search & Sorting Controls",
+      "goal": "Allow users to search by keyword, filter by categories or dates, and sort items.",
+      "requires": ["decisions.listUI"],
+      "writes": ["decisions.filterUI"],
+      "expectedOutput": "Search input with debouncing, dropdown filters, sort selector, and pagination or infinite scroll.",
+      "prompt": "Enhance the data listing view for \"{{project.name}}\" with search and filters:\n1. Search input with debounced query updates.\n2. Filter controls (e.g. status, category, date range).\n3. Sort order dropdown (newest, oldest, highest/lowest).\n4. URL query sync or local state management for active filters."
+    },
+    {
+      "id": "step-16-frontend-integration",
+      "phase": "Integration",
+      "title": "End-to-End Client-Server Integration & Error Handling",
+      "goal": "Connect all frontend views with backend endpoints and handle edge cases, network drops, and error toasts.",
+      "requires": ["decisions.coreApiCode", "decisions.listUI", "decisions.creationFormUI"],
+      "writes": ["decisions.apiClient"],
+      "expectedOutput": "Centralized API client (fetch/axios wrapper), error boundary, and global toast notification system.",
+      "prompt": "Connect and harden the end-to-end integration for \"{{project.name}}\":\n1. Centralized API utility (e.g. `apiClient.ts` / `lib/api.js`) with automatic header inclusion (auth tokens) and unified error parsing.\n2. Global Error Boundary to catch UI runtime crashes gracefully.\n3. Handling network disconnects and displaying helpful error messages to users."
+    },
+    {
+      "id": "step-17-testing-strategy",
+      "phase": "Testing",
+      "title": "Automated Unit & Integration Tests",
+      "goal": "Write tests for critical business logic, utility functions, and primary API endpoints.",
+      "requires": ["decisions.coreApiCode", "decisions.backendStack"],
+      "writes": ["decisions.testSuite"],
+      "expectedOutput": "Test runner configuration (Jest/Vitest/Supertest) and working test files for API endpoints and core logic.",
+      "prompt": "Create automated tests for \"{{project.name}}\":\n1. Setup test framework (e.g. Vitest / Jest / Node test runner).\n2. Unit tests for core business calculations or data transformers.\n3. Integration tests for API routes (testing success status 200/201 and validation failure 400).\n4. Test execution command in `package.json`."
+    },
+    {
+      "id": "step-18-security-audit",
+      "phase": "Security",
+      "title": "Security Hardening & Input Sanitization",
+      "goal": "Protect against common web vulnerabilities (SQL injection, XSS, CSRF, rate limiting, secure headers).",
+      "requires": ["decisions.backendStack", "decisions.authStrategy"],
+      "writes": ["decisions.securityMeasures"],
+      "expectedOutput": "Security checklist, rate limiting middleware, helmet/CORS config, and sanitized inputs.",
+      "prompt": "Conduct a security audit and harden \"{{project.name}}\":\n1. Configure Helmet headers and CORS policy.\n2. Add rate limiting middleware to prevent brute force on auth and API endpoints.\n3. Verify SQL injection defense (parameterized queries) and XSS sanitization.\n4. Ensure sensitive environment variables and secrets are never leaked to client bundles."
+    },
+    {
+      "id": "step-19-performance-optimization",
+      "phase": "Optimization",
+      "title": "Performance Optimization & Asset Efficiency",
+      "goal": "Optimize bundle size, database query indexes, image loading, and caching headers.",
+      "requires": ["decisions.frontendStack", "decisions.database"],
+      "writes": ["decisions.optimizations"],
+      "expectedOutput": "List of optimizations applied (caching, query optimization, lazy loading, code splitting).",
+      "prompt": "Optimize performance for \"{{project.name}}\":\n1. Frontend bundle optimization: dynamic imports / lazy loading for heavy components.\n2. Database indexing verification for frequently queried columns.\n3. HTTP caching headers for static assets and API responses.\n4. Lighthouse checklist for speed, accessibility, and SEO."
+    },
+    {
+      "id": "step-20-deployment-prep",
+      "phase": "Deployment",
+      "title": "Production Build & Deployment Configuration",
+      "goal": "Prepare production build scripts, Dockerfile or PaaS config (Vercel, Render, Railway, Fly.io), and production environment variables.",
+      "requires": ["decisions.frontendStack", "decisions.backendStack", "decisions.database"],
+      "writes": ["decisions.deploymentPlatform", "decisions.buildConfig"],
+      "expectedOutput": "Production build verification, deployment configuration file, and environment variable checklist.",
+      "prompt": "Prepare \"{{project.name}}\" for production deployment:\n1. Recommend the best free/low-cost deployment platform (e.g. Vercel for frontend/fullstack, Render/Railway for backend & database).\n2. Production build script and verification command.\n3. Configuration file (e.g. `vercel.json`, `render.yaml`, or `Dockerfile`).\n4. Step-by-step instructions to set production environment variables and run database migrations."
+    },
+    {
+      "id": "step-21-production-deployment",
+      "phase": "Deployment",
+      "title": "Live Deployment & Verification",
+      "goal": "Deploy the live app, verify database migrations on production, and run smoke tests.",
+      "requires": ["decisions.deploymentPlatform", "decisions.buildConfig"],
+      "writes": ["decisions.liveUrl"],
+      "expectedOutput": "Live deployment link, smoke test checklist, and DNS / custom domain instructions.",
+      "prompt": "Now let's launch \"{{project.name}}\" to production on {{decisions.deploymentPlatform}}:\n1. Step-by-step deployment guide (Git push, connecting repository, running remote migration).\n2. Post-deployment smoke test checklist (verifying signup, CRUD actions, error logs).\n3. Custom domain and SSL configuration overview."
+    },
+    {
+      "id": "step-22-documentation",
+      "phase": "Documentation",
+      "title": "Comprehensive README & Developer Documentation",
+      "goal": "Create a world-class README.md explaining project setup, tech stack, architecture, API routes, and contribution guide.",
+      "requires": ["project.name", "project.idea", "decisions.frontendStack", "decisions.backendStack", "decisions.database"],
+      "writes": ["decisions.readmeSummary"],
+      "expectedOutput": "Complete, production-ready README.md markdown content with badges, architecture overview, and setup instructions.",
+      "prompt": "Generate a comprehensive, professional `README.md` for \"{{project.name}}\":\n1. Project Title, one-line pitch, and badges (license, build, stack).\n2. Key Features list with emojis.\n3. Tech Stack breakdown.\n4. Local Development Quickstart (Prerequisites, Clone, Install, .env setup, Database seed, Run).\n5. API Endpoints summary table.\n6. Screenshots / Architecture diagram section placeholder."
+    },
+    {
+      "id": "step-23-project-explanation",
+      "phase": "Portfolio",
+      "title": "Project Portfolio Pitch & Technical Deep-Dive",
+      "goal": "Prepare talking points, resume bullet points, and technical explanations of architectural decisions for interviews or showcases.",
+      "requires": ["project.name", "decisions.coreValueProp", "decisions.frontendStack", "decisions.backendStack", "decisions.database"],
+      "writes": ["decisions.portfolioPitch"],
+      "expectedOutput": "Elevator pitch, resume bullet points (STAR method), and answers to common technical interview questions about the project.",
+      "prompt": "Help me present \"{{project.name}}\" in portfolio reviews and technical interviews:\n1. 30-second elevator pitch.\n2. 3 strong resume bullet points using the Action-Context-Result (STAR) framework.\n3. Explanation of the biggest technical challenge faced and how it was resolved.\n4. Explanation of why {{decisions.frontendStack}} + {{decisions.backendStack}} + {{decisions.database}} was chosen over alternatives."
+    }
+  ]
+}
+

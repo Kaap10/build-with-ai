@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Build with AI runtime storage
+.buildwithai/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
