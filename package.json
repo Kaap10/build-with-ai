@@ -6,10 +6,25 @@
     "build-with-ai": "./bin/cli.js"
   },
   "main": "bin/cli.js",
+  "files": [
+    "bin",
+    "lib",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "node tests/test-flow.js",
     "test:e2e": "node tests/e2e-test.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kaap10/build-with-ai.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Kaap10/build-with-ai/issues"
+  },
+  "homepage": "https://github.com/Kaap10/build-with-ai#readme",
   "keywords": [
     "ai",
     "cli",

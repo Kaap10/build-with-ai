@@ -1,4 +1,4 @@
-# build-with-ai 🚀
+# build-with-ai
 
 > An open-source, zero-API CLI in plain JavaScript that guides beginners through building software projects with any AI by giving them the right prompt at each step.
 
@@ -8,7 +8,7 @@
 
 ---
 
-## 💡 Why `build-with-ai`?
+## Why `build-with-ai`?
 
 Most beginners struggle to build real software with AI because they don't know:
 - **What to ask next** (missing architectural phases)
@@ -23,7 +23,7 @@ Most beginners struggle to build real software with AI because they don't know:
 
 ---
 
-## 📦 Installation & Quickstart
+## Installation & Quickstart
 
 You can run it directly with `npx` or install globally:
 
@@ -37,7 +37,7 @@ npm install -g build-with-ai
 
 ---
 
-## 🛠 Commands Reference
+## Commands Reference
 
 ### 1. `npx build-with-ai` (No Subcommand)
 - If `.buildwithai/` exists in the current folder: Displays quick progress and lets you jump straight to `next`, `resume`, `status`, or `export`.
@@ -63,7 +63,7 @@ Starts the interactive wizard to set up your project:
 
   <the actual generated prompt>
   ```
-- Automatically copies the prompt to your clipboard and confirms with `Prompt copied to clipboard ✅`.
+- Automatically copies the prompt to your clipboard and confirms with `Prompt copied to clipboard`.
 
 ### 4. `npx build-with-ai done`
 - Prompts you to record the outcome of the step:
@@ -98,7 +98,7 @@ Generates comprehensive project documentation:
 
 ---
 
-## 🏗 Architecture & Storage
+## Architecture & Storage
 
 ```
 my-project/
@@ -123,7 +123,7 @@ my-project/
 
 ---
 
-## 📖 Example Walkthrough: "Rahul builds an Expense Tracker"
+## Example Walkthrough: "Rahul builds an Expense Tracker"
 
 Here is how a beginner (Rahul) uses `build-with-ai` to build a complete full-stack web application:
 
@@ -155,7 +155,6 @@ Here is how a beginner (Rahul) uses `build-with-ai` to build a complete full-sta
 
 ---
 
-## 📄 License
+## License
 
-MIT © [build-with-ai contributors](LICENSE)
-
+MIT (c) [build-with-ai contributors](LICENSE)
