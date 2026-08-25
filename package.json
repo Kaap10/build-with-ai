@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A minimal, zero-API CLI that guides beginners through building software with any AI by giving them the right prompt at each step.",
   "bin": {
-    "build-with-ai": "./bin/cli.js"
+    "build-with-ai": "bin/cli.js"
   },
   "main": "bin/cli.js",
   "files": [
