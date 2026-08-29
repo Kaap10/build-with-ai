@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.1] - 2026-08-29
+
+### Changed
+- Normalized repository line endings via `.gitattributes`.
+- Verified and updated documentation assets for open-source registry readiness.
+
+---
+
 ## [1.1.0] - 2026-08-29
 
 ### Added
