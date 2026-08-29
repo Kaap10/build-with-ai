@@ -53,3 +53,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automatic context injection with dot-notation placeholders (`{{decisions.database}}`).
 - Full-Stack Web App (`web-app.json`) and Backend REST API (`rest-api.json`) templates.
 - Markdown documentation generator (`export` for `README.md`, `BUILD_LOG.md`, `CONTEXT.md`).
+

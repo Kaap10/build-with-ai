@@ -14,3 +14,4 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "ci(actions)"
+

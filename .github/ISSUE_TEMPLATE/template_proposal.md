@@ -26,3 +26,4 @@ List the approximate 10-15 phases/steps for this template:
 **Are you interested in submitting a PR for this template?**
 - [ ] Yes, I would love to build and submit this template JSON!
 - [ ] No, but I'm opening this for community discussion.
+

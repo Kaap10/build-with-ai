@@ -37,3 +37,4 @@ Instead, please report the vulnerability privately by:
 - **Acknowledgment:** You will receive an acknowledgment of your report within 48 hours.
 - **Assessment:** We will assess the vulnerability and develop a patch.
 - **Release & Credit:** A patched release will be published to npm, and you will be credited in the release notes (unless you prefer to remain anonymous).
+
