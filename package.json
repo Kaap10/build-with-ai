@@ -11,11 +11,14 @@
     "lib",
     "templates",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md"
   ],
   "scripts": {
     "test": "node tests/test-flow.js",
-    "test:e2e": "node tests/e2e-test.js"
+    "test:e2e": "node tests/e2e-test.js",
+    "test:all": "node tests/test-flow.js && node tests/e2e-test.js"
   },
   "repository": {
     "type": "git",

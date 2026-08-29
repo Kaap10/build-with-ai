@@ -1,6 +1,6 @@
 # Contributing to build-with-ai
 
-Thank you for your interest in contributing. build-with-ai is an open-source project and every contribution matters — whether it is a bug fix, a new template, an improved prompt, or a documentation update.
+Thank you for your interest in contributing to **`build-with-ai`**! We are building a community-driven, zero-API tool to help developers turn software ideas into reality. Every contribution matters — whether it is a new project workflow template, a prompt engineering refinement, a bug fix, or documentation improvements.
 
 ---
 
@@ -11,33 +11,30 @@ Thank you for your interest in contributing. build-with-ai is an open-source pro
 - [Local Development Setup](#local-development-setup)
 - [Project Structure](#project-structure)
 - [Submitting a Pull Request](#submitting-a-pull-request)
-- [How to Add a New Template](#how-to-add-a-new-template)
+- [How to Add a New Workflow Template](#how-to-add-a-new-workflow-template)
 - [Template Schema Reference](#template-schema-reference)
-- [Reporting Bugs](#reporting-bugs)
-- [Suggesting Features](#suggesting-features)
+- [Reporting Bugs & Feature Requests](#reporting-bugs--feature-requests)
 - [Good First Issues](#good-first-issues)
 
 ---
 
 ## Code of Conduct
 
-Be respectful and constructive. This is a beginner-friendly project. All experience levels are welcome.
+This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior via GitHub private security advisories or issue reports.
 
 ---
 
 ## Ways to Contribute
 
-You do not need to write code to contribute. Here are the ways you can help:
+You don't have to write CLI core code to make an impact. Here are key ways you can contribute:
 
-| Contribution Type | What It Means |
+| Contribution Area | Description |
 | :--- | :--- |
-| **Add a new template** | Create a JSON workflow for a new project type (e.g. Django app, Discord bot, Flutter app) |
-| **Improve existing prompts** | Refine the prompt text in any step to be clearer, more concise, or more effective |
-| **Fix a bug** | Find and fix unexpected behavior in the CLI |
-| **Improve documentation** | Fix typos, improve explanations, add examples |
-| **Suggest a feature** | Open an issue describing a new command or workflow improvement |
-| **Test on your platform** | Test the CLI on Windows, macOS, or Linux and report any issues |
-| **Translate a template** | Translate template prompts into another language |
+| **New Workflow Templates** | Create step-by-step guides for stacks like Flutter, Discord bots, Django, Electron, or SvelteKit in `templates/*.json`. |
+| **Prompt Engineering** | Refine prompt text in existing templates to produce better, cleaner AI code. |
+| **CLI & Engine Features** | Add new commands, improve terminal UI/formatting, or enhance error handling. |
+| **Testing & Edge Cases** | Add tests covering new platforms, non-TTY environments, or edge cases in `tests/`. |
+| **Documentation & Guides** | Fix typos, improve explanations, add examples, or write tutorials. |
 
 ---
 
@@ -46,7 +43,6 @@ You do not need to write code to contribute. Here are the ways you can help:
 ### 1. Fork and Clone the Repository
 
 ```bash
-# Fork the repository on GitHub first, then clone your fork
 git clone https://github.com/<your-username>/build-with-ai.git
 cd build-with-ai
 ```
@@ -57,225 +53,161 @@ cd build-with-ai
 npm install
 ```
 
-### 3. Link the CLI Globally for Testing
+### 3. Run Test Suites
+
+```bash
+# Run unit & integration tests
+npm test
+
+# Run end-to-end beginner CLI simulation
+npm run test:e2e
+
+# Run all test suites
+npm run test:all
+```
+
+### 4. Link CLI Globally for Local Testing
 
 ```bash
 npm link
-```
-
-Now you can run `build-with-ai` from any directory and it will use your local code.
-
-### 4. Run the Test Suite
-
-```bash
-npm test
-```
-
-All 11 tests should pass before you make any changes.
-
-### 5. Create a Branch for Your Work
-
-```bash
-git checkout -b feat/your-feature-name
-# or
-git checkout -b fix/your-bug-description
-# or
-git checkout -b template/mobile-game
+build-with-ai
 ```
 
 ---
 
 ## Project Structure
 
-```
+```text
 build-with-ai/
 ├── bin/
-│   └── cli.js              # CLI entrypoint — all commands are registered here
+│   └── cli.js              # Commander CLI entrypoint & interactive subcommands
 ├── lib/
-│   ├── init.js             # Interactive project setup wizard
-│   ├── state.js            # .buildwithai/ file system manager
-│   ├── promptEngine.js     # Template loader, placeholder resolver, requires checker
-│   ├── contextBuilder.js   # Dot-notation getter/setter for context.json
-│   ├── clipboard.js        # Cross-platform clipboard copy helper
-│   ├── export.js           # README.md / BUILD_LOG.md / CONTEXT.md generator
+│   ├── init.js             # Interactive onboarding wizard
+│   ├── state.js            # .buildwithai/ storage manager (state, context, history)
+│   ├── promptEngine.js     # Template loader, regex placeholder resolver, prerequisite checker
+│   ├── contextBuilder.js   # Dot-notation getter/setter & Markdown serializer
+│   ├── clipboard.js        # Cross-platform clipboard helper with safe fallbacks
+│   ├── export.js           # Deterministic README.md, BUILD_LOG.md, CONTEXT.md generator
 │   ├── resume.js           # Welcome-back dashboard
-│   ├── ui.js               # Step banners, progress bars, and terminal formatting
-│   └── logger.js           # Colorized console logger
+│   ├── ui.js               # Visual progress bars, step banners, and ANSI styling
+│   └── logger.js           # Colorized terminal logging helper
 ├── templates/
 │   ├── web-app.json        # 23-step Full-Stack Web App workflow
-│   ├── rest-api.json       # 10-step Backend REST API workflow
 │   ├── saas-mvp.json       # 15-step Modern SaaS MVP workflow
+│   ├── rest-api.json       # 10-step Backend REST API workflow
 │   ├── mobile-app.json     # 15-step React Native + Expo workflow
-│   ├── chrome-extension.json  # 12-step Chrome Extension workflow
+│   ├── chrome-extension.json # 12-step Chrome Browser Extension workflow
 │   └── ai-agent.json       # 14-step AI Agent & RAG Pipeline workflow
 ├── tests/
-│   ├── test-flow.js        # Unit and integration tests (run with `npm test`)
-│   └── e2e-test.js         # End-to-end CLI simulation tests
-├── README.md
-├── CONTRIBUTING.md         # This file
-└── package.json
+│   ├── test-flow.js        # Comprehensive unit & integration test suite
+│   └── e2e-test.js         # End-to-end interactive terminal simulation
+├── .github/
+│   ├── workflows/ci.yml    # Multi-OS (Ubuntu, macOS, Windows) CI matrix
+│   └── ISSUE_TEMPLATE/     # Issue & feature request templates
+├── CHANGELOG.md            # Semantic version release log
+├── CODE_OF_CONDUCT.md      # Contributor Covenant Code of Conduct
+├── SECURITY.md             # Vulnerability disclosure policy
+├── README.md               # Main repository documentation
+└── package.json            # Package metadata and scripts
 ```
 
 ---
 
 ## Submitting a Pull Request
 
-1. Make your changes on your branch.
-2. Run `npm test` and confirm all tests pass.
-3. Commit your changes with a clear message:
-
-```bash
-# For a new template
-git commit -m "template: add flutter-app workflow (12 steps)"
-
-# For a bug fix
-git commit -m "fix: handle missing context.json gracefully on status command"
-
-# For a feature
-git commit -m "feat: add --no-clipboard flag to suppress clipboard copy"
-
-# For a documentation update
-git commit -m "docs: improve step explanation in web-app template step 5"
-```
-
-4. Push to your fork:
-
-```bash
-git push origin feat/your-feature-name
-```
-
-5. Open a Pull Request on GitHub against the `main` branch.
-6. Fill in the PR description:
-   - What does this change do?
-   - Why is it needed?
-   - How was it tested?
+1. Create a new topic branch from `main`:
+   ```bash
+   git checkout -b feat/my-new-template
+   ```
+2. Make your changes and ensure all automated tests pass:
+   ```bash
+   npm run test:all
+   ```
+3. Commit using clean, descriptive commit messages:
+   ```bash
+   git commit -m "feat(templates): add flutter-app workflow template"
+   ```
+4. Push to your fork and open a Pull Request against the `main` branch.
+5. Complete the PR checklist provided in the pull request template.
 
 ---
 
-## How to Add a New Template
+## How to Add a New Workflow Template
 
-Adding a new workflow template is the highest-impact contribution you can make. It helps developers building entirely different kinds of projects.
+Contributing a new template is the fastest way to expand the tool's reach.
 
-**Popular requests:**
-- `flutter-app.json` — Flutter + Dart + Firebase
-- `discord-bot.json` — Discord.js + Node.js + Slash Commands
-- `django-app.json` — Python + Django + PostgreSQL + Celery
-- `cli-tool.json` — Node.js or Go CLI tool with npm/Homebrew publishing
-- `browser-game.json` — Canvas + JavaScript + Phaser.js
-- `electron-app.json` — Electron + React + auto-updater
+### Requested Community Templates
+- `flutter-app.json` — Flutter + Dart + Supabase
+- `discord-bot.json` — Discord.js + TypeScript + Slash Commands
+- `django-api.json` — Python + Django + PostgreSQL + Celery
+- `electron-desktop.json` — Electron + React + Vite
+- `browser-game.json` — HTML5 Canvas + Phaser.js
 
-### Steps to Add a Template
-
-1. Create a new file in `templates/` named `your-template-type.json`.
+### Template Authoring Checklist
+1. Create a new file in `templates/` named `<your-template-id>.json`.
 2. Follow the [Template Schema Reference](#template-schema-reference) below.
-3. Aim for **10-20 steps** covering the full project lifecycle: Discovery → Architecture → Setup → Core Features → Testing → Security → Deployment → Documentation.
-4. Run `npx build-with-ai list` to confirm your template appears.
-5. Run `npx build-with-ai init`, select your template, and test at least the first 3 steps end-to-end.
-6. Open a Pull Request.
+3. Include 10-20 sequential steps covering the full software lifecycle (Discovery $\rightarrow$ Architecture $\rightarrow$ Scaffolding $\rightarrow$ Core Features $\rightarrow$ Testing $\rightarrow$ Deployment).
+4. Run `npx build-with-ai list` to verify your template is loaded with the correct step count.
+5. Test initializing a project with your template:
+   ```bash
+   npx build-with-ai init --template ./templates/<your-template-id>.json
+   ```
 
 ---
 
 ## Template Schema Reference
 
-Each template is a JSON file with this structure:
+Every template in `templates/*.json` conforms to this JSON structure:
 
 ```json
 {
-  "type": "unique-id",
+  "type": "unique-template-id",
   "title": "Human Readable Title",
-  "description": "One-line description of what this template builds.",
+  "description": "One-line summary of what this workflow guides the developer through.",
   "steps": [
     {
-      "id": "step-01-discovery",
-      "phase": "Discovery",
+      "id": "step-01-identifier",
+      "phase": "Discovery | Architecture | Database | Setup | Frontend | Testing | Security | Deployment",
       "title": "Short Step Title",
-      "goal": "Why this step matters and what outcome it achieves.",
+      "goal": "Explains why this step matters and what outcome is achieved.",
       "requires": ["project.name", "project.idea"],
       "writes": ["decisions.targetAudience", "decisions.coreValueProp"],
       "expectedOutput": "What the AI should produce when given this prompt.",
       "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
-      "targetFiles": ["src/app/page.tsx", "prisma/schema.prisma"],
-      "prompt": "The actual prompt text with {{project.name}} placeholders."
+      "targetFiles": ["prisma/schema.prisma", "src/lib/db.ts"],
+      "prompt": "Prompt text containing {{project.name}} or {{decisions.database}} placeholders."
     }
   ]
 }
 ```
 
-### Field Reference
+### Available Placeholders
 
-| Field | Required | Description |
-| :--- | :---: | :--- |
-| `type` | Yes | Unique kebab-case ID used to reference the template (e.g. `flutter-app`). Must match the filename without `.json`. |
-| `title` | Yes | Human-readable name shown in `list` and `init`. |
-| `description` | Yes | One-line summary shown in `list`. |
-| `steps[].id` | Yes | Unique kebab-case ID for the step (e.g. `step-03-database`). |
-| `steps[].phase` | Yes | Engineering phase label (e.g. `Discovery`, `Architecture`, `Database`, `Frontend`, `Testing`, `Security`, `Deployment`). |
-| `steps[].title` | Yes | Short step title shown in banners and status checklist. |
-| `steps[].goal` | Yes | Explains *why* this step matters. Shown as `WHY THIS STEP`. |
-| `steps[].requires` | Yes | Dot-notation keys that must exist in `context.json` before this step can run (e.g. `decisions.database`). Use `[]` if none. |
-| `steps[].writes` | Yes | Dot-notation keys the user is expected to record during `done` (e.g. `decisions.mvpFeatures`). Use `[]` if none. |
-| `steps[].expectedOutput` | Yes | What the AI should return. Shown as `WHAT AI SHOULD PRODUCE`. |
-| `steps[].recommendedAI` | No | Best AI model for this specific step (e.g. `Claude 3.5 Sonnet / GPT-4o`). Shown in step banner. |
-| `steps[].targetFiles` | No | List of files the developer should create or edit during this step (e.g. `["prisma/schema.prisma"]`). Shown in step banner. |
-| `steps[].prompt` | Yes | The full prompt text. Use `{{dot.notation}}` for any value from `context.json`. |
+You can use these placeholders anywhere inside the `prompt` string:
 
-### Available Placeholder Values
-
-These are always available in any template prompt:
-
-| Placeholder | Value |
+| Placeholder | Injected Value |
 | :--- | :--- |
-| `{{project.name}}` | The project name entered during `init` |
-| `{{project.idea}}` | The one-line idea entered during `init` |
-| `{{project.experienceLevel}}` | Beginner / Intermediate / Experienced |
-| `{{project.type}}` | The template ID |
-| `{{decisions.anyKey}}` | Any value previously written by an earlier step's `done` |
-
-### Writing Good Prompts
-
-- Be specific. Vague prompts produce vague code.
-- Tell the AI to act as a specific expert: *"Act as a Senior Backend Architect"*.
-- Number your instructions so the AI produces organized output.
-- Reference decisions from prior steps using placeholders like `{{decisions.database}}` — this is the whole point.
-- End with a concrete deliverable: *"Provide the complete Prisma schema ready to copy."*
+| `{{project.name}}` | Project name entered during `init` |
+| `{{project.idea}}` | One-line project idea entered during `init` |
+| `{{project.experienceLevel}}` | Experience level (`Beginner`, `Intermediate`, `Experienced`) |
+| `{{project.type}}` | The active template ID |
+| `{{decisions.<key>}}` | Any decision recorded in `context.json` from earlier steps |
 
 ---
 
-## Reporting Bugs
+## Reporting Bugs & Feature Requests
 
-Open a GitHub Issue with:
-
-1. The command you ran.
-2. The error message or unexpected output.
-3. Your Node.js version (`node --version`).
-4. Your operating system.
-
-If relevant, include the contents of `.buildwithai/state.json` (remove any personal project details first).
-
----
-
-## Suggesting Features
-
-Open a GitHub Issue with the label `enhancement` and describe:
-
-1. The problem you are trying to solve.
-2. The proposed solution or command.
-3. An example of how it would work from the terminal.
+- **Bug Reports:** Open an issue using our [Bug Report Template](https://github.com/Kaap10/build-with-ai/issues/new?template=bug_report.md).
+- **Feature Requests:** Suggest ideas via our [Feature Request Template](https://github.com/Kaap10/build-with-ai/issues/new?template=feature_request.md).
+- **Template Proposals:** Propose new workflows via the [Template Proposal Template](https://github.com/Kaap10/build-with-ai/issues/new?template=template_proposal.md).
 
 ---
 
 ## Good First Issues
 
-If you are new to open source and looking for a starting point, these are great areas to help with:
+Looking for an easy entry point?
+- Refine wording or add missing `targetFiles` / `recommendedAI` to existing templates.
+- Write a new specialized template for your favorite programming framework.
+- Add test coverage for new edge cases in `tests/`.
 
-- Fixing typos or improving wording in existing template prompts.
-- Adding `targetFiles` or `recommendedAI` to any step that is missing them.
-- Writing a new workflow template for a project type not yet covered.
-- Improving the wording in error messages in `bin/cli.js`.
-- Adding a missing edge case to the test suite in `tests/test-flow.js`.
-
-Look for issues tagged `good first issue` on the GitHub repository.
-
----
-
-Thank you for contributing. Every template, bug fix, and improvement makes this tool more useful for every developer who uses it.
+Look for issues tagged `good first issue` on GitHub!
