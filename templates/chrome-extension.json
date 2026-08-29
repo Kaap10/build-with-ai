@@ -1,0 +1,151 @@
+{
+  "type": "chrome-extension",
+  "title": "Chrome Browser Extension (Manifest V3)",
+  "description": "Step-by-step workflow for designing, building, and publishing a production-ready Chrome Extension using Manifest V3, Vite, and React.",
+  "steps": [
+    {
+      "id": "step-01-discovery",
+      "phase": "Discovery",
+      "title": "Extension Concept & Browser Context",
+      "goal": "Define the extension category, user trigger context, and core browser interaction model.",
+      "requires": ["project.name", "project.idea"],
+      "writes": ["decisions.extensionType", "decisions.triggerContext"],
+      "expectedOutput": "Extension type, trigger context (page action vs global), and core permissions needed.",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": [],
+      "prompt": "I am building a Chrome Extension called \"{{project.name}}\".\nThe concept is: {{project.idea}}.\nMy experience level is {{project.experienceLevel}}.\n\n1. Classify the extension type: page action (active on specific sites), browser action (global toolbar button), or devtools panel.\n2. Define the trigger context: when does the user interact? (clicking icon, right-click context menu, keyboard shortcut, page load).\n3. List the Chrome APIs and permissions needed (e.g. `tabs`, `storage`, `activeTab`, `scripting`, `webRequest`, `notifications`).\n4. Identify any content security policy constraints or cross-origin restrictions to plan around."
+    },
+    {
+      "id": "step-02-mvp-scope",
+      "phase": "Requirements",
+      "title": "MVP Feature Scope & UI Surface Map",
+      "goal": "Map out the popup UI, options page, and content script injection points for V1.",
+      "requires": ["decisions.extensionType", "decisions.triggerContext"],
+      "writes": ["decisions.uiSurfaces", "decisions.mvpFeatures"],
+      "expectedOutput": "List of UI surfaces (popup, options, content script overlay), core features, and explicit non-goals.",
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": [],
+      "prompt": "Scope the MVP for \"{{project.name}}\" (extension type: {{decisions.extensionType}}, triggers: {{decisions.triggerContext}}):\n1. Map the UI surfaces: popup (dimensions, key actions), options page (settings), any content script overlay injected into pages.\n2. List 3-5 MVP features with clear user stories.\n3. Define what data is stored locally (chrome.storage.local vs chrome.storage.sync).\n4. List 5 explicit V1 non-goals.\n5. Identify any sites where the extension will primarily be used and any site-specific permissions needed."
+    },
+    {
+      "id": "step-03-tech-stack",
+      "phase": "Tech Stack",
+      "title": "Build Tooling & Framework Selection",
+      "goal": "Select Vite, framework (React/Vanilla), and extension-specific bundling configuration.",
+      "requires": ["project.experienceLevel", "decisions.uiSurfaces"],
+      "writes": ["decisions.buildTool", "decisions.uiFramework"],
+      "expectedOutput": "Vite + React + TypeScript setup with chrome-extension rollup/vite plugin configuration.",
+      "recommendedAI": "GPT-4o",
+      "targetFiles": ["package.json", "vite.config.ts"],
+      "prompt": "Select the build stack for \"{{project.name}}\" Chrome Extension with UI surfaces: {{decisions.uiSurfaces}}:\n1. Build tool: Vite with `@crxjs/vite-plugin` (recommended) or webpack with `webpack-extension-manifest-plugin`.\n2. UI framework: React 18 + TypeScript (for complex UI) or Vanilla JS/TS (for lightweight extensions).\n3. Styling: Tailwind CSS with preflight reset scoped to extension shadow DOM.\n4. State management: Zustand or jotai for shared state between popup and content scripts via chrome.storage.\n5. Testing: Vitest for unit tests, Playwright for E2E tests of the popup UI.\n6. Provide the complete project initialization commands."
+    },
+    {
+      "id": "step-04-manifest",
+      "phase": "Configuration",
+      "title": "Manifest V3 Configuration",
+      "goal": "Define the complete manifest.json with all required fields, permissions, and entry points.",
+      "requires": ["decisions.extensionType", "decisions.uiSurfaces", "decisions.buildTool"],
+      "writes": ["decisions.manifestConfig"],
+      "expectedOutput": "Complete manifest.json with action, background service worker, content scripts, permissions, and web_accessible_resources.",
+      "recommendedAI": "GPT-4o",
+      "targetFiles": ["manifest.json"],
+      "prompt": "Write the complete Manifest V3 `manifest.json` for \"{{project.name}}\" (type: {{decisions.extensionType}}, surfaces: {{decisions.uiSurfaces}}):\n1. Required fields: manifest_version (3), name, version, description.\n2. `action` block: popup path, default icon set (16, 32, 48, 128px).\n3. `background.service_worker` path and `type: module`.\n4. `content_scripts`: matches (URL patterns), js/css files, run_at timing.\n5. `permissions` array (only request the minimum required).\n6. `host_permissions` for any external APIs.\n7. `web_accessible_resources` for any assets accessed from content scripts.\n8. `commands` for keyboard shortcuts.\n9. `options_page` or `options_ui` path."
+    },
+    {
+      "id": "step-05-service-worker",
+      "phase": "Background",
+      "title": "Background Service Worker",
+      "goal": "Implement the service worker for extension lifecycle events, message routing, and API calls.",
+      "requires": ["decisions.manifestConfig", "decisions.mvpFeatures"],
+      "writes": ["decisions.serviceWorkerLogic"],
+      "expectedOutput": "Service worker handling install, message routing, context menu registration, and alarm/scheduled tasks.",
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": ["src/background/index.ts"],
+      "prompt": "Implement the background service worker for \"{{project.name}}\":\n1. `onInstalled` handler: set default storage values and create context menus.\n2. Message listener: `chrome.runtime.onMessage` routing messages from popup and content scripts.\n3. Context menu registration and handler.\n4. `chrome.alarms` setup for any scheduled background tasks.\n5. Badge text/color updates on toolbar icon based on state.\n6. Any external API calls (service workers cannot use XMLHttpRequest, must use fetch).\n7. Error handling and logging pattern for service worker context."
+    },
+    {
+      "id": "step-06-content-scripts",
+      "phase": "Content Scripts",
+      "title": "Content Script & Page DOM Injection",
+      "goal": "Implement content scripts that safely interact with host page DOM and communicate with the service worker.",
+      "requires": ["decisions.serviceWorkerLogic", "decisions.uiSurfaces"],
+      "writes": ["decisions.contentScriptLogic"],
+      "expectedOutput": "Content script with isolated shadow DOM overlay, message passing to background, and page DOM manipulation.",
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": ["src/content/index.ts", "src/content/overlay.tsx"],
+      "prompt": "Implement the content script for \"{{project.name}}\":\n1. Initialize content script safely: check if already injected using a sentinel element.\n2. Create an isolated shadow DOM root to inject React UI without conflicting with host page styles.\n3. `chrome.runtime.sendMessage` to communicate with the background service worker.\n4. `chrome.runtime.onMessage` listener to receive commands from popup or background.\n5. DOM observation using `MutationObserver` if the extension needs to react to page content changes.\n6. Clean teardown function to remove the overlay when the extension is disabled."
+    },
+    {
+      "id": "step-07-popup-ui",
+      "phase": "Popup UI",
+      "title": "Popup UI Components & Storage Integration",
+      "goal": "Build the extension popup with React, connected to chrome.storage for persistent settings and state.",
+      "requires": ["decisions.uiFramework", "decisions.mvpFeatures"],
+      "writes": ["decisions.popupComponents"],
+      "expectedOutput": "Popup React app with chrome.storage hooks, main feature UI, and settings toggle.",
+      "recommendedAI": "Claude 3.5 Sonnet / v0.dev",
+      "targetFiles": ["src/popup/", "src/popup/App.tsx", "src/hooks/useStorage.ts"],
+      "prompt": "Build the popup UI for \"{{project.name}}\" using {{decisions.uiFramework}}:\n1. `src/hooks/useStorage.ts` — Custom hook wrapping `chrome.storage.sync.get/set` with React state sync.\n2. Main popup App component (max 400x600px) with the primary feature UI.\n3. Enable/disable toggle persisted to chrome.storage.\n4. Status indicator showing current page compatibility.\n5. Quick action buttons sending messages to content script via `chrome.tabs.sendMessage`.\n6. Loading and error states for async storage operations.\n7. Link to open options page."
+    },
+    {
+      "id": "step-08-options-page",
+      "phase": "Options Page",
+      "title": "Options Page & User Settings",
+      "goal": "Build a full-page settings UI allowing users to configure extension behavior and manage stored data.",
+      "requires": ["decisions.popupComponents", "decisions.mvpFeatures"],
+      "writes": ["decisions.optionsPage"],
+      "expectedOutput": "Options page with categorized settings, form validation, import/export data, and reset to defaults.",
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": ["src/options/", "src/options/App.tsx"],
+      "prompt": "Build the options page for \"{{project.name}}\":\n1. Full-page React app with tabbed settings categories.\n2. Settings form with validation, auto-save on change, and success/error toast feedback.\n3. Data management section: export all stored data as JSON, import from JSON file, reset to defaults.\n4. Whitelist/blacklist URL pattern editor (if applicable).\n5. Keyboard shortcut configuration display (linking to chrome://extensions/shortcuts).\n6. About section showing version, links to privacy policy and support."
+    },
+    {
+      "id": "step-09-storage-messaging",
+      "phase": "Data & Messaging",
+      "title": "Storage Architecture & Message Passing Protocol",
+      "goal": "Define the chrome.storage schema, message type system, and cross-context communication patterns.",
+      "requires": ["decisions.mvpFeatures", "decisions.serviceWorkerLogic"],
+      "writes": ["decisions.storageSchema", "decisions.messageProtocol"],
+      "expectedOutput": "TypeScript storage schema, typed message union types, and message passing utility functions.",
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": ["src/types/", "src/lib/storage.ts", "src/lib/messaging.ts"],
+      "prompt": "Design the data and messaging layer for \"{{project.name}}\":\n1. `src/types/storage.ts` — TypeScript interface defining all chrome.storage.sync and chrome.storage.local schemas.\n2. `src/types/messages.ts` — Discriminated union type for all message types between popup, content, and background.\n3. `src/lib/storage.ts` — Type-safe wrappers for chrome.storage get/set/remove with error handling.\n4. `src/lib/messaging.ts` — Type-safe `sendMessage` and `onMessage` utilities.\n5. Storage migration pattern for handling schema changes between extension versions."
+    },
+    {
+      "id": "step-10-icons-assets",
+      "phase": "Assets",
+      "title": "Icons, Screenshots & Promo Assets",
+      "goal": "Create and optimize all required extension icons and Chrome Web Store promotional assets.",
+      "requires": ["decisions.manifestConfig"],
+      "writes": ["decisions.storeAssets"],
+      "expectedOutput": "Icon generation script, store screenshot templates, and promo tile specifications.",
+      "recommendedAI": "GPT-4o",
+      "targetFiles": ["public/icons/", "store-assets/"],
+      "prompt": "Prepare visual assets for \"{{project.name}}\":\n1. Icon requirements: 16x16, 32x32, 48x48, 128x128 PNG icons (main icon and disabled/inactive variant).\n2. Script to auto-generate icon sizes from a single SVG source using `sharp` or `Inkscape CLI`.\n3. Chrome Web Store screenshots: 1280x800 or 640x400 PNG format, 5 screenshots recommended.\n4. Promo tiles: small (440x280), large (920x680), and marquee (1400x560) for featured placement.\n5. Screenshot content recommendations: show the extension in action on a real website."
+    },
+    {
+      "id": "step-11-testing",
+      "phase": "Testing",
+      "title": "Testing: Unit, Integration & Playwright E2E",
+      "goal": "Test message passing, storage logic, popup rendering, and end-to-end flows in a real browser.",
+      "requires": ["decisions.popupComponents", "decisions.serviceWorkerLogic"],
+      "writes": ["decisions.testSuite"],
+      "expectedOutput": "Vitest unit tests for utilities, JSDOM component tests for popup, and Playwright E2E with extension loading.",
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": ["tests/", "playwright.config.ts"],
+      "prompt": "Write tests for \"{{project.name}}\":\n1. Vitest unit tests for `lib/storage.ts` and `lib/messaging.ts` with chrome API mocks.\n2. React Testing Library tests for the popup App component (mocking chrome storage responses).\n3. Playwright E2E test loading the unpacked extension:\n   a. Load extension from `dist/` directory using `--load-extension` flag.\n   b. Navigate to a test page, click the extension icon, verify popup opens correctly.\n   c. Interact with the popup and verify the content script receives the message.\n4. Mock chrome APIs for unit tests using `jest-chrome` or `vitest-chrome`."
+    },
+    {
+      "id": "step-12-publish",
+      "phase": "Deployment",
+      "title": "Chrome Web Store Publication & CI/CD",
+      "goal": "Package, submit, and automate the publishing of the extension to the Chrome Web Store.",
+      "requires": ["decisions.storeAssets", "decisions.testSuite"],
+      "writes": ["decisions.publishedExtensionId"],
+      "expectedOutput": "Store listing configuration, automated build + publish GitHub Actions workflow, and review guidelines.",
+      "recommendedAI": "GPT-4o",
+      "targetFiles": [".github/workflows/publish.yml", "store-listing.json"],
+      "prompt": "Publish \"{{project.name}}\" to the Chrome Web Store:\n1. `npm run build` output verification: confirm `dist/manifest.json` is valid and all assets are present.\n2. Chrome Web Store Developer Dashboard setup: create a new item, fill in name, description (132 chars), and upload screenshots.\n3. Privacy policy requirements: what data is collected, where it's stored, disclosure for host permissions.\n4. `chrome-webstore-upload` GitHub Action to automate publishing on git tag push:\n   - Build the extension.\n   - Upload to Web Store using OAuth refresh token.\n   - Submit for review.\n5. Versioning strategy: bump `version` in `manifest.json` and `package.json` together using a release script.\n6. Common rejection reasons to avoid: excessive permissions, vague descriptions, missing privacy policy."
+    }
+  ]
+}

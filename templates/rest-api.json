@@ -11,6 +11,8 @@
       "requires": ["project.name", "project.idea"],
       "writes": ["decisions.coreResources", "decisions.apiConsumers"],
       "expectedOutput": "List of core resources/entities and expected API consumer types.",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": [],
       "prompt": "I am building a backend REST API called \"{{project.name}}\".\nThe goal is: {{project.idea}}.\nMy experience level is {{project.experienceLevel}}.\n\nAct as a Senior Backend Architect:\n1. Identify the core resources/entities (e.g. users, items, transactions).\n2. Define the consumer profiles (e.g. mobile app, single page web app, 3rd party webhooks).\n3. List non-negotiable MVP capabilities for V1."
     },
     {
@@ -21,6 +23,8 @@
       "requires": ["project.experienceLevel", "decisions.coreResources"],
       "writes": ["decisions.runtime", "decisions.framework", "decisions.database"],
       "expectedOutput": "Chosen runtime (Node.js/Go/Python), web framework (Express/Fastify/NestJS), database, and ORM.",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": ["package.json"],
       "prompt": "For \"{{project.name}}\" handling {{decisions.coreResources}}, recommend the optimal backend stack for a {{project.experienceLevel}} developer:\n1. Runtime and Framework (e.g. Node.js with Fastify or Express).\n2. Database (e.g. PostgreSQL with Prisma/Drizzle or SQLite for prototyping).\n3. Validation library (e.g. Zod or Joi).\n4. Justification for why this stack provides simplicity and safety."
     },
     {
@@ -31,6 +35,8 @@
       "requires": ["decisions.database", "decisions.coreResources"],
       "writes": ["decisions.schemaDesign"],
       "expectedOutput": "Database schema definitions (SQL DDL / ORM models), indexes, and relations.",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": ["prisma/schema.prisma", "src/db/schema.ts"],
       "prompt": "Design the database schema for \"{{project.name}}\" using {{decisions.database}}:\n1. Schema definition for {{decisions.coreResources}}.\n2. Indexes on frequently queried and foreign key columns.\n3. Seed data script with sample records for local testing."
     },
     {
@@ -41,6 +47,8 @@
       "requires": ["decisions.coreResources", "decisions.schemaDesign"],
       "writes": ["decisions.endpointList"],
       "expectedOutput": "Endpoint routing table and JSON request/response schema specifications.",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": ["docs/openapi.yaml", "src/routes/"],
       "prompt": "Create the complete API endpoint specification for \"{{project.name}}\":\n1. Endpoints table (Method, Path, Auth Required, Query Params, Request Body, Response 200/201/400/404/500).\n2. Standard unified error response contract `{ error: { code: string, message: string, details?: any } }`.\n3. Pagination convention for collection routes (e.g. limit/offset or cursor-based)."
     },
     {
@@ -51,6 +59,8 @@
       "requires": ["decisions.runtime", "decisions.framework", "decisions.database"],
       "writes": ["decisions.packageSetup"],
       "expectedOutput": "Step-by-step CLI commands, package.json scripts, and .env.example file.",
+      "recommendedAI": "GPT-4o",
+      "targetFiles": ["package.json", ".env.example", "src/index.ts"],
       "prompt": "Provide terminal commands and configuration to scaffold \"{{project.name}}\" using {{decisions.runtime}}, {{decisions.framework}}, and {{decisions.database}}:\n1. Project initialization and dependencies installation.\n2. `.env.example` file.\n3. Entrypoint server script (`server.js` or `src/index.ts`).\n4. Database connection file."
     },
     {
@@ -61,6 +71,8 @@
       "requires": ["decisions.framework", "decisions.database"],
       "writes": ["decisions.authImplementation"],
       "expectedOutput": "Auth routes (`/auth/register`, `/auth/login`), JWT signing/verification, and guard middleware.",
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": ["src/middleware/auth.ts", "src/routes/auth.ts", "src/lib/jwt.ts"],
       "prompt": "Implement authentication and access control for \"{{project.name}}\":\n1. User registration with password hashing (bcrypt/argon2).\n2. User login endpoint issuing signed JWTs.\n3. Reusable authentication guard middleware to protect private routes.\n4. Role or permission checking helper."
     },
     {
@@ -71,6 +83,8 @@
       "requires": ["decisions.endpointList", "decisions.schemaDesign"],
       "writes": ["decisions.controllerCode"],
       "expectedOutput": "Controller and service files with input validation and clean error handling.",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": ["src/controllers/", "src/services/", "src/validators/"],
       "prompt": "Implement the controllers and service layer for \"{{project.name}}\":\n1. Route handlers matching {{decisions.endpointList}}.\n2. Zod/Joi schema validation on incoming request bodies and query params.\n3. Service layer functions executing database queries.\n4. Proper HTTP response codes and consistent error formatting."
     },
     {
@@ -81,6 +95,8 @@
       "requires": ["decisions.endpointList", "decisions.controllerCode"],
       "writes": ["decisions.testSuite"],
       "expectedOutput": "Integration test files testing successful and erroneous scenarios.",
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": ["tests/", "tests/api/auth.test.ts", "tests/api/resources.test.ts"],
       "prompt": "Write automated integration tests for \"{{project.name}}\" API routes:\n1. Test setup with in-memory database or test database container.\n2. Integration test cases for Auth (signup, login, unauthorized access).\n3. CRUD tests for {{decisions.coreResources}} (happy path and validation errors).\n4. Test runner command in package.json."
     },
     {
@@ -91,6 +107,8 @@
       "requires": ["decisions.framework"],
       "writes": ["decisions.securityConfig"],
       "expectedOutput": "Rate limiter configuration, CORS whitelist, Helmet security headers, and request size limits.",
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": ["src/middleware/", "src/config/security.ts"],
       "prompt": "Harden the security of \"{{project.name}}\":\n1. Rate limiting configuration (e.g. express-rate-limit) for public and auth endpoints.\n2. Strict CORS headers allowing only configured origins.\n3. Security headers (Helmet) and body payload size limits.\n4. Input sanitization to prevent injection attacks."
     },
     {
@@ -101,8 +119,9 @@
       "requires": ["decisions.runtime", "decisions.framework", "decisions.database"],
       "writes": ["decisions.deployedApiUrl"],
       "expectedOutput": "Deployment configuration (Dockerfile / PaaS config), health check route `/health`, and API documentation setup.",
+      "recommendedAI": "GPT-4o",
+      "targetFiles": ["Dockerfile", "render.yaml", "src/routes/health.ts"],
       "prompt": "Deploy \"{{project.name}}\" to production:\n1. Recommended hosting platform (e.g. Render, Railway, Fly.io).\n2. Dockerfile or cloud configuration manifest.\n3. `/health` check endpoint for uptime monitoring.\n4. Instructions for connecting remote managed database and setting production environment variables."
     }
   ]
 }
-

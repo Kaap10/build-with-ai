@@ -11,6 +11,8 @@
       "requires": ["project.name", "project.idea"],
       "writes": ["decisions.targetAudience", "decisions.coreValueProp"],
       "expectedOutput": "A concise problem statement, primary user persona, and clear unique value proposition.",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": [],
       "prompt": "I am building a web project called \"{{project.name}}\".\nThe concept is: {{project.idea}}.\nMy experience level is {{project.experienceLevel}}.\n\nPlease act as a Principal Product Architect and help me refine this idea:\n1. Define the primary target audience and user persona.\n2. Summarize the core pain point this user faces today.\n3. Formulate a crisp 2-sentence Value Proposition explaining how this app solves that pain point.\n4. List 3 key metrics that would define whether this project succeeds."
     },
     {
@@ -21,6 +23,8 @@
       "requires": ["decisions.coreValueProp"],
       "writes": ["decisions.mvpFeatures", "decisions.nonGoals"],
       "expectedOutput": "A prioritized list of 3-5 core MVP user stories and an explicit list of non-goals (deferred features).",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": [],
       "prompt": "Based on our core value proposition:\n\"{{decisions.coreValueProp}}\"\n\nHelp me define the minimum viable product (MVP) scope for \"{{project.name}}\":\n1. List exactly 3 to 5 non-negotiable MVP features (user stories in 'As a [user], I want to [action] so that [benefit]' format).\n2. List 3 to 5 features that are tempting but should explicitly be NON-GOALS for V1.\n3. Outline the single core user flow from first visit to value delivery."
     },
     {
@@ -31,6 +35,8 @@
       "requires": ["project.experienceLevel", "decisions.mvpFeatures"],
       "writes": ["decisions.frontendStack", "decisions.backendStack", "decisions.database"],
       "expectedOutput": "Selected frontend framework, backend framework/runtime, database, styling solution, and hosting targets.",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": ["package.json"],
       "prompt": "My experience level is {{project.experienceLevel}} and my project \"{{project.name}}\" requires these MVP features:\n{{decisions.mvpFeatures}}\n\nRecommend a modern, cohesive tech stack with minimal friction:\n1. Frontend framework & styling approach (e.g. Next.js / React + Tailwind CSS).\n2. Backend / API solution (e.g. Node.js Express / Next.js Route Handlers / Fastify).\n3. Database (e.g. SQLite for local / PostgreSQL with Prisma or Drizzle ORM).\n4. Justification for why this stack fits a {{project.experienceLevel}} developer and avoids over-engineering."
     },
     {
@@ -41,6 +47,8 @@
       "requires": ["decisions.frontendStack", "decisions.backendStack", "decisions.database"],
       "writes": ["decisions.architecturePattern", "decisions.folderStructure"],
       "expectedOutput": "A clean directory structure breakdown and component interaction diagram/flow.",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": [],
       "prompt": "We have chosen the following tech stack for \"{{project.name}}\":\n- Frontend: {{decisions.frontendStack}}\n- Backend: {{decisions.backendStack}}\n- Database: {{decisions.database}}\n\nPlease design the system architecture:\n1. Provide the recommended directory and file layout.\n2. Detail the data flow from client UI interaction down to database persistence and back.\n3. Outline separation of concerns (presentation, business logic, data access layer)."
     },
     {
@@ -51,6 +59,8 @@
       "requires": ["decisions.database", "decisions.mvpFeatures"],
       "writes": ["decisions.dataModels"],
       "expectedOutput": "Complete database schema (SQL DDL or ORM models like Prisma/Drizzle) with relations and constraints.",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": ["prisma/schema.prisma", "src/db/schema.ts"],
       "prompt": "For \"{{project.name}}\" using {{decisions.database}} to support:\n{{decisions.mvpFeatures}}\n\nPlease provide:\n1. The complete database schema (in SQL or ORM schema format).\n2. Primary keys, foreign keys, cascade rules, and indexing strategy.\n3. Sample seed data for 2-3 realistic records per entity to help with local development."
     },
     {
@@ -61,6 +71,8 @@
       "requires": ["decisions.dataModels"],
       "writes": ["decisions.apiEndpoints"],
       "expectedOutput": "A clean API contract table including endpoint paths, methods, request bodies, and JSON responses.",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": ["src/app/api/", "src/routes/"],
       "prompt": "Based on our data models for \"{{project.name}}\":\n{{decisions.dataModels}}\n\nPlease define the API endpoints:\n1. Specify the REST routes (Method, Path, Query Params, Request Body JSON, Response Body JSON, Error Codes).\n2. Include endpoints for CRUD operations and any specialized business actions.\n3. Define standard error response format (e.g. { error: string, details?: any })."
     },
     {
@@ -71,6 +83,8 @@
       "requires": ["decisions.frontendStack", "decisions.backendStack", "decisions.database"],
       "writes": ["decisions.envVariables"],
       "expectedOutput": "Step-by-step terminal commands to create the project, install packages, and create `.env.example`.",
+      "recommendedAI": "GPT-4o",
+      "targetFiles": ["package.json", ".env.example", "tsconfig.json"],
       "prompt": "Provide exact terminal commands to scaffold \"{{project.name}}\" from scratch using {{decisions.frontendStack}}, {{decisions.backendStack}}, and {{decisions.database}}:\n1. Project initialization command (e.g. npm init / create-next-app / npx create-...).\n2. Exact `npm install` commands for runtime dependencies and devDependencies.\n3. Complete `.env.example` file with required environment variables and placeholders.\n4. Script commands in package.json (dev, build, start, lint)."
     },
     {
@@ -81,6 +95,8 @@
       "requires": ["decisions.database", "decisions.dataModels"],
       "writes": ["decisions.dbClientFile"],
       "expectedOutput": "Database connection helper code, migration scripts, and a health-check script.",
+      "recommendedAI": "GPT-4o",
+      "targetFiles": ["src/lib/db.ts", "prisma/migrations/", "scripts/seed.ts"],
       "prompt": "Let's set up the database layer for \"{{project.name}}\" using {{decisions.database}}:\n1. Provide the database connection file (e.g. `lib/db.js` or `db/client.ts`).\n2. Migration file or initialization script to create tables from our schema.\n3. A simple seed script (`npm run seed`) to populate initial dummy data."
     },
     {
@@ -91,6 +107,8 @@
       "requires": ["project.name", "decisions.frontendStack"],
       "writes": ["decisions.uiLayout"],
       "expectedOutput": "Global layout component, Navbar, responsive container, and consistent theme styling.",
+      "recommendedAI": "Claude 3.5 Sonnet / v0.dev",
+      "targetFiles": ["src/app/layout.tsx", "src/components/layout/Navbar.tsx", "tailwind.config.ts"],
       "prompt": "Create the root layout and visual styling for \"{{project.name}}\" using {{decisions.frontendStack}}:\n1. Theme configuration (modern, clean color palette: primary, neutral, background, text, alerts).\n2. Main App Layout component with responsive Header/Navbar (logo, navigation links, user action) and Footer.\n3. Notification/Toast or alert banner container component."
     },
     {
@@ -101,6 +119,8 @@
       "requires": ["decisions.backendStack", "decisions.database"],
       "writes": ["decisions.authStrategy"],
       "expectedOutput": "Password hashing, JWT / session cookies, register/login endpoints, and auth middleware.",
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": ["src/app/api/auth/", "src/middleware.ts", "src/lib/auth.ts"],
       "prompt": "Implement authentication for \"{{project.name}}\":\n1. Explain the chosen auth strategy (e.g. session cookies / JWT / Auth0 / NextAuth / Supabase Auth).\n2. Backend route handlers for `/api/auth/register`, `/api/auth/login`, and `/api/auth/me`.\n3. Authentication middleware / helper to protect private routes.\n4. Password security: bcrypt hashing and input validation."
     },
     {
@@ -111,6 +131,8 @@
       "requires": ["decisions.authStrategy", "decisions.frontendStack"],
       "writes": ["decisions.authUI"],
       "expectedOutput": "Accessible login and signup form components with loading states and error toasts.",
+      "recommendedAI": "Claude 3.5 Sonnet / v0.dev",
+      "targetFiles": ["src/app/(auth)/login/page.tsx", "src/app/(auth)/signup/page.tsx", "src/components/auth/"],
       "prompt": "Build the client-side authentication screens for \"{{project.name}}\":\n1. Sign In and Sign Up form components with validation (email format, password length).\n2. Loading state during submission and clear inline error messages if credentials fail.\n3. Client-side authentication context or state hook (e.g. `useAuth()`)."
     },
     {
@@ -121,6 +143,8 @@
       "requires": ["decisions.apiEndpoints", "decisions.dataModels", "decisions.dbClientFile"],
       "writes": ["decisions.coreApiCode"],
       "expectedOutput": "Clean API route handlers with request sanitization, error handling, and database operations.",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": ["src/app/api/", "src/services/", "src/lib/validators.ts"],
       "prompt": "Implement the core backend API routes for \"{{project.name}}\" based on our endpoints:\n{{decisions.apiEndpoints}}\n\n1. Complete handler code for Create, Read, Update, Delete operations.\n2. Request body validation (sanitizing inputs, checking required fields).\n3. Try/catch blocks with appropriate HTTP status codes (200, 201, 400, 404, 500)."
     },
     {
@@ -131,6 +155,8 @@
       "requires": ["decisions.coreApiCode", "decisions.frontendStack"],
       "writes": ["decisions.creationFormUI"],
       "expectedOutput": "Interactive form component with client-side validation, submit handler, and optimistic updates or toast feedback.",
+      "recommendedAI": "Claude 3.5 Sonnet / v0.dev",
+      "targetFiles": ["src/components/forms/", "src/app/(dashboard)/create/"],
       "prompt": "Build the primary creation/input component for \"{{project.name}}\":\n1. Form component fields matching our data schema.\n2. Async submit handler calling the backend API endpoint.\n3. Input validation, disabled state while submitting, and success notification."
     },
     {
@@ -141,6 +167,8 @@
       "requires": ["decisions.coreApiCode", "decisions.frontendStack"],
       "writes": ["decisions.listUI"],
       "expectedOutput": "List/Grid component, item card component, skeleton loading state, and empty state placeholder.",
+      "recommendedAI": "Claude 3.5 Sonnet / v0.dev",
+      "targetFiles": ["src/components/ui/", "src/app/(dashboard)/page.tsx"],
       "prompt": "Build the data listing and item display view for \"{{project.name}}\":\n1. Main list/grid view component fetching data from the API.\n2. Individual item card or row with actions (Edit, Delete, View Details).\n3. Skeleton loader for pending requests.\n4. Empty state component with an action button when no records exist."
     },
     {
@@ -151,6 +179,8 @@
       "requires": ["decisions.listUI"],
       "writes": ["decisions.filterUI"],
       "expectedOutput": "Search input with debouncing, dropdown filters, sort selector, and pagination or infinite scroll.",
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": ["src/components/filters/", "src/hooks/useSearch.ts"],
       "prompt": "Enhance the data listing view for \"{{project.name}}\" with search and filters:\n1. Search input with debounced query updates.\n2. Filter controls (e.g. status, category, date range).\n3. Sort order dropdown (newest, oldest, highest/lowest).\n4. URL query sync or local state management for active filters."
     },
     {
@@ -161,6 +191,8 @@
       "requires": ["decisions.coreApiCode", "decisions.listUI", "decisions.creationFormUI"],
       "writes": ["decisions.apiClient"],
       "expectedOutput": "Centralized API client (fetch/axios wrapper), error boundary, and global toast notification system.",
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": ["src/lib/api.ts", "src/components/ErrorBoundary.tsx", "src/components/Toaster.tsx"],
       "prompt": "Connect and harden the end-to-end integration for \"{{project.name}}\":\n1. Centralized API utility (e.g. `apiClient.ts` / `lib/api.js`) with automatic header inclusion (auth tokens) and unified error parsing.\n2. Global Error Boundary to catch UI runtime crashes gracefully.\n3. Handling network disconnects and displaying helpful error messages to users."
     },
     {
@@ -171,6 +203,8 @@
       "requires": ["decisions.coreApiCode", "decisions.backendStack"],
       "writes": ["decisions.testSuite"],
       "expectedOutput": "Test runner configuration (Jest/Vitest/Supertest) and working test files for API endpoints and core logic.",
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": ["tests/", "vitest.config.ts", "tests/api/"],
       "prompt": "Create automated tests for \"{{project.name}}\":\n1. Setup test framework (e.g. Vitest / Jest / Node test runner).\n2. Unit tests for core business calculations or data transformers.\n3. Integration tests for API routes (testing success status 200/201 and validation failure 400).\n4. Test execution command in `package.json`."
     },
     {
@@ -181,6 +215,8 @@
       "requires": ["decisions.backendStack", "decisions.authStrategy"],
       "writes": ["decisions.securityMeasures"],
       "expectedOutput": "Security checklist, rate limiting middleware, helmet/CORS config, and sanitized inputs.",
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": ["src/middleware.ts", "src/lib/security.ts"],
       "prompt": "Conduct a security audit and harden \"{{project.name}}\":\n1. Configure Helmet headers and CORS policy.\n2. Add rate limiting middleware to prevent brute force on auth and API endpoints.\n3. Verify SQL injection defense (parameterized queries) and XSS sanitization.\n4. Ensure sensitive environment variables and secrets are never leaked to client bundles."
     },
     {
@@ -191,6 +227,8 @@
       "requires": ["decisions.frontendStack", "decisions.database"],
       "writes": ["decisions.optimizations"],
       "expectedOutput": "List of optimizations applied (caching, query optimization, lazy loading, code splitting).",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": ["next.config.js", "src/app/"],
       "prompt": "Optimize performance for \"{{project.name}}\":\n1. Frontend bundle optimization: dynamic imports / lazy loading for heavy components.\n2. Database indexing verification for frequently queried columns.\n3. HTTP caching headers for static assets and API responses.\n4. Lighthouse checklist for speed, accessibility, and SEO."
     },
     {
@@ -201,6 +239,8 @@
       "requires": ["decisions.frontendStack", "decisions.backendStack", "decisions.database"],
       "writes": ["decisions.deploymentPlatform", "decisions.buildConfig"],
       "expectedOutput": "Production build verification, deployment configuration file, and environment variable checklist.",
+      "recommendedAI": "GPT-4o",
+      "targetFiles": ["vercel.json", "Dockerfile", "render.yaml"],
       "prompt": "Prepare \"{{project.name}}\" for production deployment:\n1. Recommend the best free/low-cost deployment platform (e.g. Vercel for frontend/fullstack, Render/Railway for backend & database).\n2. Production build script and verification command.\n3. Configuration file (e.g. `vercel.json`, `render.yaml`, or `Dockerfile`).\n4. Step-by-step instructions to set production environment variables and run database migrations."
     },
     {
@@ -211,6 +251,8 @@
       "requires": ["decisions.deploymentPlatform", "decisions.buildConfig"],
       "writes": ["decisions.liveUrl"],
       "expectedOutput": "Live deployment link, smoke test checklist, and DNS / custom domain instructions.",
+      "recommendedAI": "GPT-4o",
+      "targetFiles": [],
       "prompt": "Now let's launch \"{{project.name}}\" to production on {{decisions.deploymentPlatform}}:\n1. Step-by-step deployment guide (Git push, connecting repository, running remote migration).\n2. Post-deployment smoke test checklist (verifying signup, CRUD actions, error logs).\n3. Custom domain and SSL configuration overview."
     },
     {
@@ -221,7 +263,9 @@
       "requires": ["project.name", "project.idea", "decisions.frontendStack", "decisions.backendStack", "decisions.database"],
       "writes": ["decisions.readmeSummary"],
       "expectedOutput": "Complete, production-ready README.md markdown content with badges, architecture overview, and setup instructions.",
-      "prompt": "Generate a comprehensive, professional `README.md` for \"{{project.name}}\":\n1. Project Title, one-line pitch, and badges (license, build, stack).\n2. Key Features list with emojis.\n3. Tech Stack breakdown.\n4. Local Development Quickstart (Prerequisites, Clone, Install, .env setup, Database seed, Run).\n5. API Endpoints summary table.\n6. Screenshots / Architecture diagram section placeholder."
+      "recommendedAI": "Claude 3.5 Sonnet",
+      "targetFiles": ["README.md", "docs/"],
+      "prompt": "Generate a comprehensive, professional `README.md` for \"{{project.name}}\":\n1. Project Title, one-line pitch, and badges (license, build, stack).\n2. Key Features list.\n3. Tech Stack breakdown.\n4. Local Development Quickstart (Prerequisites, Clone, Install, .env setup, Database seed, Run).\n5. API Endpoints summary table.\n6. Screenshots / Architecture diagram section placeholder."
     },
     {
       "id": "step-23-project-explanation",
@@ -231,8 +275,9 @@
       "requires": ["project.name", "decisions.coreValueProp", "decisions.frontendStack", "decisions.backendStack", "decisions.database"],
       "writes": ["decisions.portfolioPitch"],
       "expectedOutput": "Elevator pitch, resume bullet points (STAR method), and answers to common technical interview questions about the project.",
+      "recommendedAI": "Claude 3.5 Sonnet / GPT-4o",
+      "targetFiles": [],
       "prompt": "Help me present \"{{project.name}}\" in portfolio reviews and technical interviews:\n1. 30-second elevator pitch.\n2. 3 strong resume bullet points using the Action-Context-Result (STAR) framework.\n3. Explanation of the biggest technical challenge faced and how it was resolved.\n4. Explanation of why {{decisions.frontendStack}} + {{decisions.backendStack}} + {{decisions.database}} was chosen over alternatives."
     }
   ]
 }
-

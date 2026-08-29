@@ -1,7 +1,7 @@
 {
   "name": "build-with-ai",
-  "version": "1.0.2",
-  "description": "A minimal, zero-API CLI that guides beginners through building software with any AI by giving them the right prompt at each step.",
+  "version": "1.1.0",
+  "description": "A minimal, zero-API CLI that guides developers through building software with any AI by giving them the right prompt at each step.",
   "bin": {
     "build-with-ai": "bin/cli.js"
   },
@@ -32,7 +32,14 @@
     "developer-tools",
     "workflow",
     "scaffolding",
-    "guide"
+    "guide",
+    "rag",
+    "saas",
+    "react-native",
+    "chrome-extension",
+    "ai-agent",
+    "copilot",
+    "zero-api"
   ],
   "author": "build-with-ai contributors",
   "license": "MIT",
@@ -46,3 +53,4 @@
     "picocolors": "^1.1.1"
   }
 }
+
