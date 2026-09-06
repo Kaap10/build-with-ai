@@ -105,6 +105,7 @@ async function executeFullE2ETest() {
     'Done / Summary': 'FAIL',
     'Done / Full history': 'FAIL',
     'Context injection': 'FAIL',
+    'Context key lookup': 'FAIL',
     'Missing requires': 'FAIL',
     'Back': 'FAIL',
     'Status': 'FAIL',
@@ -253,6 +254,23 @@ async function executeFullE2ETest() {
 
     report['Context injection'] = 'PASS';
     console.log('   ✔ Multi-step context injection verified across steps 1 -> 2 -> 3 -> 4.\n');
+
+        // -------------------------------------------------------------
+    // Step 6.5: Context Key Lookup Command
+    // -------------------------------------------------------------
+    console.log('🔹 6.5. Testing `build-with-ai context decisions.database`...');
+
+    const contextExistingRes = runSync(['context', 'decisions.database'], testDir);
+    assert(contextExistingRes.stdout.includes('SQLite with Prisma ORM'), 'Should print existing database value');
+    assert.strictEqual(contextExistingRes.code, 0, 'Should exit normally for existing key');
+
+    const contextMissingRes = runSync(['context', 'decisions.nonExistentKey'], testDir);
+    assert(contextMissingRes.stdout.includes('No value found for key') || contextMissingRes.stderr.includes('No value found for key'), 'Should show clear warning for missing key');
+    assert.strictEqual(contextMissingRes.code, 0, 'Should exit normally for missing key too');
+
+    report['Context key lookup'] = 'PASS';
+    console.log('   ✔ Context command correctly prints existing values and warns on missing keys.\n');
+
 
     // -------------------------------------------------------------
     // Step 7: Missing Required Context Warning
