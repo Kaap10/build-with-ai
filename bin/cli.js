@@ -142,7 +142,7 @@ program
   .action(async () => {
     if (!isInitialized()) {
       logger.error('No project found in this directory. Run `npx build-with-ai init` first.');
-      process.exit(1);
+      process.exit(1);  
     }
 
     const state = loadState();
@@ -534,12 +534,13 @@ program
 program
   .command('export')
   .description('Export README.md, BUILD_LOG.md, and .buildwithai/CONTEXT.md.')
-  .action(() => {
+  .option('--dry-run', 'simulate export without writing files')
+  .action((options) => {
     if (!isInitialized()) {
       logger.error('No project found in this directory. Run `npx build-with-ai init` first.');
       process.exit(1);
     }
-    runExport();
+    runExport(undefined, options);
   });
 
 // ─────────────────────────────────────────────────

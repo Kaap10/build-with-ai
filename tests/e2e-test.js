@@ -438,4 +438,16 @@ async function executeFullE2ETest() {
   console.log('===============================================================');
 }
 
+// Test for export --dry-run
+test('export --dry-run simulates export without creating files', () => {
+  
+  const result = execSync('node bin/cli.js export --dry-run', { encoding: 'utf8' });
+
+  assert.include(result, 'README.md');
+  assert.include(result, 'BUILD_LOG.md');
+  assert.include(result, '.buildwithai/CONTEXT.md');
+
+  const readmeExists = fs.existsSync(path.join(process.cwd(), 'README.md'));
+  assert.isFalse(readmeExists, 'README.md should not be created during dry-run');
+});
 executeFullE2ETest();
