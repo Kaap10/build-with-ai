@@ -410,6 +410,15 @@ async function executeFullE2ETest() {
     const back1 = runSync(['back'], backDir);
     assert(back1.stdout.includes('Already at the first step'), 'back on step 1');
 
+    // Invalid jump values
+    for (const value of ['abc', '0', '999', '2oops']) {
+      const invalidJump = runSync(['jump', value], backDir);
+      const output = `${invalidJump.stdout}\n${invalidJump.stderr}`;
+      assert.notStrictEqual(invalidJump.code, 0, `jump ${value} exits non-zero`);
+      assert(output.includes('Invalid step number. Must be between 1 and 23.'), `jump ${value} shows valid range`);
+      assert(!output.includes('Error:'), `jump ${value} omits stack trace`);
+    }
+
     safeRmDir(emptyDir);
     safeRmDir(backDir);
 
