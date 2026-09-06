@@ -206,6 +206,7 @@ You can use these placeholders anywhere inside the `prompt` string:
 ## Good First Issues
 
 Looking for an easy entry point?
+- Browse the [open Good First Issues on GitHub](https://github.com/Kaap10/build-with-ai/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 - Refine wording or add missing `targetFiles` / `recommendedAI` to existing templates.
 - Write a new specialized template for your favorite programming framework.
 - Add test coverage for new edge cases in `tests/`.
