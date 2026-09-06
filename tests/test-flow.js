@@ -2,7 +2,7 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-
+const { execSync } = require('child_process');
 const {
   isInitialized,
   initState,
@@ -198,6 +198,15 @@ async function runTests() {
   assert.strictEqual(fs.existsSync(getStorageDir(tempDir)), false, '.buildwithai dir removed');
   assert.strictEqual(fs.existsSync(path.join(tempDir, 'my-source-code.js')), true, 'User code preserved intact');
   console.log('  ✔ Reset cleaned .buildwithai and preserved user source files.');
+
+// Test 12: --version CLI Flag
+ console.log('\n▶ Test 12: --version CLI Flag');
+  const cliPath = path.join(__dirname, '..', 'bin', 'cli.js');
+  const pkg = require('../package.json');
+
+  const versionOutput = execSync(`node "${cliPath}" --version`).toString().trim();
+  assert.strictEqual(versionOutput, pkg.version, `--version should print ${pkg.version}, got ${versionOutput}`);
+  console.log('  ✔ --version flag prints correct version and exits successfully.');
 
   // Cleanup temp dir
   fs.rmSync(tempDir, { recursive: true, force: true });
