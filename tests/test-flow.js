@@ -81,6 +81,13 @@ async function runTests() {
   assert(webAppTemplate.steps[0].id === 'step-01-discovery', 'Step 1 should be discovery');
   assert(Array.isArray(webAppTemplate.steps[0].requires), 'Step 1 requires must be array');
   assert(Array.isArray(webAppTemplate.steps[0].writes), 'Step 1 writes must be array');
+
+  const flutterAppTemplate = getTemplate('flutter-app');
+  assert(flutterAppTemplate !== null, 'flutter-app template must exist');
+  assert(flutterAppTemplate.stepCount >= 10 && flutterAppTemplate.stepCount <= 20, `flutter-app template should have 10-20 steps, found ${flutterAppTemplate.stepCount}`);
+  assert(flutterAppTemplate.steps[0].id === 'step-01-discovery', 'Flutter Step 1 should be discovery');
+  assert(Array.isArray(flutterAppTemplate.steps[0].requires), 'Flutter Step 1 requires must be array');
+  assert(Array.isArray(flutterAppTemplate.steps[0].writes), 'Flutter Step 1 writes must be array');
   console.log('  ✔ Templates loaded successfully with dynamic step counts.');
 
   // Remote templates must fail in bounded time when the server stalls.
