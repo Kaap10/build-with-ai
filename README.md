@@ -332,3 +332,4 @@ If you want to use this tool in automated script or pipelines , you can pass the
 EXAMPLE:
 ```bash
 npx build-with-ai next --json
+```

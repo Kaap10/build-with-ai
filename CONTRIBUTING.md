@@ -215,4 +215,4 @@ Look for issues tagged `good first issue` on GitHub!
 
 #RUNNING SCRIPTS with JSON 
 when running this script programmatically, you can append `--json` flag to your command, 
-(e.g., `npx build-wit-ai next --json`) to get structured output.
+(e.g., `npx build-with-ai next --json`) to get structured output.
