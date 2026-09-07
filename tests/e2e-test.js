@@ -436,18 +436,17 @@ async function executeFullE2ETest() {
   const allPass = Object.values(report).every(v => v === 'PASS');
   console.log(`OVERALL STATUS: ${allPass ? 'PASS' : 'FAIL'}`);
   console.log('===============================================================');
+
+  // Test for export --dry-run
+    const dryRunResult = runSync(['export', '--dry-run'], testDir);
+    
+    assert(dryRunResult.stdout.includes('README.md'));
+    assert(dryRunResult.stdout.includes('BUILD_LOG.md'));
+    assert(dryRunResult.stdout.includes('.buildwithai/CONTEXT.md'));
+  
+    const readmeExists = fs.existsSync(path.join(testDir, 'README.md'));
+    assert(!readmeExists);
 }
 
-// Test for export --dry-run
-test('export --dry-run simulates export without creating files', () => {
-  
-  const result = execSync('node bin/cli.js export --dry-run', { encoding: 'utf8' });
 
-  assert.include(result, 'README.md');
-  assert.include(result, 'BUILD_LOG.md');
-  assert.include(result, '.buildwithai/CONTEXT.md');
-
-  const readmeExists = fs.existsSync(path.join(process.cwd(), 'README.md'));
-  assert.isFalse(readmeExists, 'README.md should not be created during dry-run');
-});
-executeFullE2ETest();
+  executeFullE2ETest();
