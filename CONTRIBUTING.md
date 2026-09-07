@@ -96,6 +96,7 @@ build-with-ai/
 │   ├── saas-mvp.json       # 15-step Modern SaaS MVP workflow
 │   ├── rest-api.json       # 10-step Backend REST API workflow
 │   ├── mobile-app.json     # 15-step React Native + Expo workflow
+│   ├── flutter-app.json    # 16-step Flutter + Dart workflow
 │   ├── chrome-extension.json # 12-step Chrome Browser Extension workflow
 │   └── ai-agent.json       # 14-step AI Agent & RAG Pipeline workflow
 ├── tests/
