@@ -39,6 +39,34 @@ const {
 
 const { copyToClipboard } = require('../lib/clipboard');
 
+async function runIsolatedClipboardFallback(moduleSource) {
+  const isolatedRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'buildwithai-clipboard-'));
+  const helperDir = path.join(isolatedRoot, 'lib');
+  const helperPath = path.join(helperDir, 'clipboard.js');
+
+  try {
+    fs.mkdirSync(helperDir, { recursive: true });
+    fs.copyFileSync(path.join(__dirname, '..', 'lib', 'clipboard.js'), helperPath);
+
+    if (moduleSource !== null) {
+      const moduleDir = path.join(isolatedRoot, 'node_modules', 'clipboardy');
+      fs.mkdirSync(moduleDir, { recursive: true });
+      fs.writeFileSync(path.join(moduleDir, 'package.json'), JSON.stringify({
+        name: 'clipboardy',
+        version: '0.0.0',
+        main: 'index.js'
+      }), 'utf8');
+      fs.writeFileSync(path.join(moduleDir, 'index.js'), moduleSource, 'utf8');
+    }
+
+    const isolatedHelper = require(helperPath);
+    return await isolatedHelper.copyToClipboard('fallback test');
+  } finally {
+    delete require.cache[helperPath];
+    fs.rmSync(isolatedRoot, { recursive: true, force: true });
+  }
+}
+
 async function runTests() {
   console.log('🧪 Starting build-with-ai Test Suite...\n');
 
@@ -140,8 +168,14 @@ async function runTests() {
 
   // Test 4: Clipboard copying
   console.log('\n▶ Test 4: Safe Clipboard Copy');
+  const missingClipboard = await runIsolatedClipboardFallback(null);
+  assert.strictEqual(missingClipboard, false, 'Missing clipboard module should return false');
+
+  const unsupportedClipboard = await runIsolatedClipboardFallback('module.exports = {};\n');
+  assert.strictEqual(unsupportedClipboard, false, 'Clipboard module without write methods should return false');
+
   const copied = await copyToClipboard(res1.resolvedPrompt);
-  console.log(`  ✔ copyToClipboard executed safely (result: ${copied})`);
+  console.log(`  ✔ Clipboard fallbacks returned false without crashing (environment copy result: ${copied}).`);
 
   // Test 5: Simulating Step 1 Completion (`done`)
   console.log('\n▶ Test 5: Simulating Step 1 Completion');
