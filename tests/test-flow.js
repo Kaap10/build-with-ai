@@ -199,15 +199,15 @@ async function runTests() {
   assert.strictEqual(fs.existsSync(path.join(tempDir, 'my-source-code.js')), true, 'User code preserved intact');
   console.log('  ✔ Reset cleaned .buildwithai and preserved user source files.');
 
-  // Test 13: Test actual resume workflow behavior
-  console.log('\n Test 13: Test actual resume workflow behavior');
+  // Test 12: Test actual resume workflow behavior
+  console.log('\n▶ Test 12: Test actual resume workflow behavior');
   const resumeResult = runSync(['resume'], tempDir);
   assert(resumeResult !== null, 'Resume process should execute');
   
   const storageDir = getStorageDir(tempDir);
   assert(fs.existsSync(storageDir), 'Resume execution should maintain storage context');
-  console.log('  Actual resume workflow state and behavior verified.');
-
+  console.log('  ✔ Actual resume workflow state and behavior verified.');
+  
   // Cleanup temp dir
   fs.rmSync(tempDir, { recursive: true, force: true });
   console.log('\n🎉 ALL TESTS PASSED SUCCESSFULLY! ✅\n');
