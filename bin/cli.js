@@ -333,7 +333,7 @@ program
     let target;
 
     if (stepNumber !== undefined) {
-      target = parseInt(stepNumber, 10);
+      target = Number(stepNumber);
     } else {
       // Interactive step picker
       if (!template || !template.steps) {
@@ -360,7 +360,7 @@ program
       target = picked;
     }
 
-    if (isNaN(target) || target < 1 || target > totalSteps) {
+    if (!Number.isInteger(target) || target < 1 || target > totalSteps) {
       logger.error(`Invalid step number. Must be between 1 and ${totalSteps}.`);
       process.exit(1);
     }

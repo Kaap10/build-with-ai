@@ -2,7 +2,7 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-
+const { execSync } = require('child_process');
 const {
   isInitialized,
   initState,
@@ -19,6 +19,7 @@ const {
 
 const {
   loadTemplates,
+  loadRemoteTemplate,
   getTemplate,
   resolveStepPrompt
 } = require('../lib/promptEngine');
@@ -38,6 +39,34 @@ const {
 
 const { copyToClipboard } = require('../lib/clipboard');
 
+async function runIsolatedClipboardFallback(moduleSource) {
+  const isolatedRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'buildwithai-clipboard-'));
+  const helperDir = path.join(isolatedRoot, 'lib');
+  const helperPath = path.join(helperDir, 'clipboard.js');
+
+  try {
+    fs.mkdirSync(helperDir, { recursive: true });
+    fs.copyFileSync(path.join(__dirname, '..', 'lib', 'clipboard.js'), helperPath);
+
+    if (moduleSource !== null) {
+      const moduleDir = path.join(isolatedRoot, 'node_modules', 'clipboardy');
+      fs.mkdirSync(moduleDir, { recursive: true });
+      fs.writeFileSync(path.join(moduleDir, 'package.json'), JSON.stringify({
+        name: 'clipboardy',
+        version: '0.0.0',
+        main: 'index.js'
+      }), 'utf8');
+      fs.writeFileSync(path.join(moduleDir, 'index.js'), moduleSource, 'utf8');
+    }
+
+    const isolatedHelper = require(helperPath);
+    return await isolatedHelper.copyToClipboard('fallback test');
+  } finally {
+    delete require.cache[helperPath];
+    fs.rmSync(isolatedRoot, { recursive: true, force: true });
+  }
+}
+
 async function runTests() {
   console.log('🧪 Starting build-with-ai Test Suite...\n');
 
@@ -52,7 +81,60 @@ async function runTests() {
   assert(webAppTemplate.steps[0].id === 'step-01-discovery', 'Step 1 should be discovery');
   assert(Array.isArray(webAppTemplate.steps[0].requires), 'Step 1 requires must be array');
   assert(Array.isArray(webAppTemplate.steps[0].writes), 'Step 1 writes must be array');
+
+  const flutterAppTemplate = getTemplate('flutter-app');
+  assert(flutterAppTemplate !== null, 'flutter-app template must exist');
+  assert(flutterAppTemplate.stepCount >= 10 && flutterAppTemplate.stepCount <= 20, `flutter-app template should have 10-20 steps, found ${flutterAppTemplate.stepCount}`);
+  assert(flutterAppTemplate.steps[0].id === 'step-01-discovery', 'Flutter Step 1 should be discovery');
+  assert(Array.isArray(flutterAppTemplate.steps[0].requires), 'Flutter Step 1 requires must be array');
+  assert(Array.isArray(flutterAppTemplate.steps[0].writes), 'Flutter Step 1 writes must be array');
   console.log('  ✔ Templates loaded successfully with dynamic step counts.');
+
+  // Remote templates must fail in bounded time when the server stalls.
+  console.log('\n▶ Remote Template Timeout');
+  const https = require('https');
+  const originalHttpsGet = https.get;
+  const originalSetTimeout = global.setTimeout;
+  const originalClearTimeout = global.clearTimeout;
+  let configuredTimeout;
+  let requestDestroyed = false;
+  let errorHandler;
+
+  https.get = () => ({
+    on(event, handler) {
+      if (event === 'error') errorHandler = handler;
+      return this;
+    },
+    destroy() {
+      requestDestroyed = true;
+      if (errorHandler) errorHandler(new Error('request timed out'));
+    }
+  });
+  global.setTimeout = (onTimeout, timeoutMs) => {
+    configuredTimeout = timeoutMs;
+    setImmediate(onTimeout);
+    return 1;
+  };
+  global.clearTimeout = () => {};
+
+  try {
+    const didNotResolve = Symbol('did-not-resolve');
+    const remoteTemplate = await Promise.race([
+      loadRemoteTemplate('https://example.test/stalled-template.json'),
+      new Promise(resolve => originalSetTimeout(() => resolve(didNotResolve), 100))
+    ]);
+    assert.notStrictEqual(remoteTemplate, didNotResolve, 'Stalled request should resolve within its configured timeout');
+    assert.strictEqual(remoteTemplate, null, 'Timed-out remote template should fail to load');
+    assert(configuredTimeout > 0, 'Remote request should configure a positive timeout');
+    assert(configuredTimeout <= 10_000, 'Remote request timeout should remain short');
+    assert.strictEqual(requestDestroyed, true, 'Timed-out request should be destroyed');
+    assert(getTemplate('web-app') !== null, 'Built-in templates should remain usable after a remote timeout');
+  } finally {
+    https.get = originalHttpsGet;
+    global.setTimeout = originalSetTimeout;
+    global.clearTimeout = originalClearTimeout;
+  }
+  console.log('  ✔ Stalled remote template fails cleanly without blocking local templates.');
 
   // Create isolated temp workspace
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'buildwithai-test-'));
@@ -93,8 +175,14 @@ async function runTests() {
 
   // Test 4: Clipboard copying
   console.log('\n▶ Test 4: Safe Clipboard Copy');
+  const missingClipboard = await runIsolatedClipboardFallback(null);
+  assert.strictEqual(missingClipboard, false, 'Missing clipboard module should return false');
+
+  const unsupportedClipboard = await runIsolatedClipboardFallback('module.exports = {};\n');
+  assert.strictEqual(unsupportedClipboard, false, 'Clipboard module without write methods should return false');
+
   const copied = await copyToClipboard(res1.resolvedPrompt);
-  console.log(`  ✔ copyToClipboard executed safely (result: ${copied})`);
+  console.log(`  ✔ Clipboard fallbacks returned false without crashing (environment copy result: ${copied}).`);
 
   // Test 5: Simulating Step 1 Completion (`done`)
   console.log('\n▶ Test 5: Simulating Step 1 Completion');
@@ -207,6 +295,14 @@ async function runTests() {
   const storageDir = getStorageDir(tempDir);
   assert(fs.existsSync(storageDir), 'Resume execution should maintain storage context');
   console.log('  Actual resume workflow state and behavior verified.');
+// Test 12: --version CLI Flag
+ console.log('\n▶ Test 12: --version CLI Flag');
+  const cliPath = path.join(__dirname, '..', 'bin', 'cli.js');
+  const pkg = require('../package.json');
+
+  const versionOutput = execSync(`node "${cliPath}" --version`).toString().trim();
+  assert.strictEqual(versionOutput, pkg.version, `--version should print ${pkg.version}, got ${versionOutput}`);
+  console.log('  ✔ --version flag prints correct version and exits successfully.');
 
   // Cleanup temp dir
   fs.rmSync(tempDir, { recursive: true, force: true });
@@ -217,4 +313,3 @@ runTests().catch(err => {
   console.error('❌ Test failed:', err);
   process.exit(1);
 });
-
