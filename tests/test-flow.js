@@ -19,6 +19,7 @@ const {
 
 const {
   loadTemplates,
+  loadRemoteTemplate,
   getTemplate,
   resolveStepPrompt
 } = require('../lib/promptEngine');
@@ -53,6 +54,52 @@ async function runTests() {
   assert(Array.isArray(webAppTemplate.steps[0].requires), 'Step 1 requires must be array');
   assert(Array.isArray(webAppTemplate.steps[0].writes), 'Step 1 writes must be array');
   console.log('  ✔ Templates loaded successfully with dynamic step counts.');
+
+  // Remote templates must fail in bounded time when the server stalls.
+  console.log('\n▶ Remote Template Timeout');
+  const https = require('https');
+  const originalHttpsGet = https.get;
+  const originalSetTimeout = global.setTimeout;
+  const originalClearTimeout = global.clearTimeout;
+  let configuredTimeout;
+  let requestDestroyed = false;
+  let errorHandler;
+
+  https.get = () => ({
+    on(event, handler) {
+      if (event === 'error') errorHandler = handler;
+      return this;
+    },
+    destroy() {
+      requestDestroyed = true;
+      if (errorHandler) errorHandler(new Error('request timed out'));
+    }
+  });
+  global.setTimeout = (onTimeout, timeoutMs) => {
+    configuredTimeout = timeoutMs;
+    setImmediate(onTimeout);
+    return 1;
+  };
+  global.clearTimeout = () => {};
+
+  try {
+    const didNotResolve = Symbol('did-not-resolve');
+    const remoteTemplate = await Promise.race([
+      loadRemoteTemplate('https://example.test/stalled-template.json'),
+      new Promise(resolve => originalSetTimeout(() => resolve(didNotResolve), 100))
+    ]);
+    assert.notStrictEqual(remoteTemplate, didNotResolve, 'Stalled request should resolve within its configured timeout');
+    assert.strictEqual(remoteTemplate, null, 'Timed-out remote template should fail to load');
+    assert(configuredTimeout > 0, 'Remote request should configure a positive timeout');
+    assert(configuredTimeout <= 10_000, 'Remote request timeout should remain short');
+    assert.strictEqual(requestDestroyed, true, 'Timed-out request should be destroyed');
+    assert(getTemplate('web-app') !== null, 'Built-in templates should remain usable after a remote timeout');
+  } finally {
+    https.get = originalHttpsGet;
+    global.setTimeout = originalSetTimeout;
+    global.clearTimeout = originalClearTimeout;
+  }
+  console.log('  ✔ Stalled remote template fails cleanly without blocking local templates.');
 
   // Create isolated temp workspace
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'buildwithai-test-'));
@@ -217,4 +264,3 @@ runTests().catch(err => {
   console.error('❌ Test failed:', err);
   process.exit(1);
 });
-
