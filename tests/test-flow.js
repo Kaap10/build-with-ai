@@ -324,6 +324,33 @@ async function runTests() {
   assert.strictEqual(fs.existsSync(path.join(tempDir, 'my-source-code.js')), true, 'User code preserved intact');
   console.log('  ✔ Reset cleaned .buildwithai and preserved user source files.');
 
+// Test 12: Malformed Template JSON handling and graceful skipping
+  console.log('\n Test 12: Malformed Template JSON handling');
+  const projectTemplatesDir = path.join(__dirname, '..', 'templates');
+  
+  const badTemplatePath = path.join(projectTemplatesDir, 'bad-template.json');
+  const validTemplatePath = path.join(projectTemplatesDir, 'web-app.json');
+  
+  // Temporarily write a malformed JSON file into the project templates directory
+  fs.writeFileSync(badTemplatePath, '{ malformed json content', 'utf8');
+  
+  try {
+    // Load templates, ensuring loadTemplates encounters the bad JSON and continues safely
+    const loadedTemplates = loadTemplates();
+    
+    // Check whether the corrupted template was excluded and a valid template still loads
+    const hasBad = loadedTemplates.some(t => t.id === 'bad-template');
+    const hasGood = loadedTemplates.some(t => t.id === 'web-app');
+    
+    assert.strictEqual(hasBad, false, 'Malformed template must be ignored');
+    assert.strictEqual(hasGood, true, 'Valid templates must still load');
+    console.log('  ✔ Malformed templates handled gracefully without crashing.');
+  } finally {
+    // Ensure the temporary bad template file is always removed, even if assertions fail
+    if (fs.existsSync(badTemplatePath)) {
+      fs.unlinkSync(badTemplatePath);
+    }
+  }
 // Test 12: --version CLI Flag
  console.log('\n▶ Test 12: --version CLI Flag');
   const cliPath = path.join(__dirname, '..', 'bin', 'cli.js');
