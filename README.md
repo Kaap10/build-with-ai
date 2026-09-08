@@ -186,6 +186,16 @@ Recommend the optimal SaaS tech stack...
 
 ### 5. On-the-Fly Decision Editing (`set`)
 
+Valid JSON values are stored with their types: arrays, objects, numbers, booleans,
+and `null`. Ordinary text and invalid JSON remain strings. To store a JSON-looking
+value as a string, pass a JSON string literal (including its double quotes).
+
+```bash
+npx build-with-ai set decisions.features '["Auth", "Export"]'
+npx build-with-ai set decisions.options '{"enabled": true}'
+npx build-with-ai set decisions.code '"123"'
+```
+
 If Riya decides to change her database from SQLite to PostgreSQL with Prisma:
 
 ```bash
