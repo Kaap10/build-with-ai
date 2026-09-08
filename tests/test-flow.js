@@ -2,6 +2,7 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const http = require('http');
 const { execSync } = require('child_process');
 const {
   isInitialized,
@@ -68,6 +69,42 @@ async function runIsolatedClipboardFallback(moduleSource) {
 }
 
 async function runTests() {
+  const remoteData = { type: 'remote-test', title: 'Remote test', steps: [{ id: 'first' }] };
+  const responses = [
+    { status: 200, body: JSON.stringify(remoteData), valid: true },
+    { status: 201, body: JSON.stringify(remoteData), valid: true },
+    { status: 404, body: JSON.stringify(remoteData) },
+    { status: 500, body: JSON.stringify(remoteData) },
+    { status: 302, body: JSON.stringify(remoteData) },
+    { status: 204, body: '' },
+    { status: 200, body: '' },
+    { status: 200, body: '   ' },
+    { status: 200, body: '{broken' }
+  ];
+  const server = http.createServer((req, res) => {
+    const response = responses[Number(req.url.slice(1).replace('.json', ''))];
+    res.writeHead(response.status, { 'Content-Type': 'application/json', 'Connection': 'close' });
+    res.end(response.body);
+  });
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', resolve);
+  });
+  try {
+    for (const [index, response] of responses.entries()) {
+      const result = await loadRemoteTemplate(`http://127.0.0.1:${server.address().port}/${index}.json`);
+      if (response.valid) {
+        assert.deepStrictEqual(result, {
+          id: String(index), ...remoteData, description: '', stepCount: 1
+        });
+      } else {
+        assert.strictEqual(result, null, `HTTP ${response.status} with body ${JSON.stringify(response.body)} must fail to load`);
+      }
+    }
+    assert(getTemplate('web-app'), 'Local templates remain available after failed remote loads');
+  } finally {
+    await new Promise(resolve => server.close(resolve));
+  }
   console.log('🧪 Starting build-with-ai Test Suite...\n');
 
   // Test 1: Template Loading & Verification
@@ -295,6 +332,33 @@ async function runTests() {
   const storageDir = getStorageDir(tempDir);
   assert(fs.existsSync(storageDir), 'Resume execution should maintain storage context');
   console.log('  Actual resume workflow state and behavior verified.');
+// Test 12: Malformed Template JSON handling and graceful skipping
+  console.log('\n Test 12: Malformed Template JSON handling');
+  const projectTemplatesDir = path.join(__dirname, '..', 'templates');
+  
+  const badTemplatePath = path.join(projectTemplatesDir, 'bad-template.json');
+  const validTemplatePath = path.join(projectTemplatesDir, 'web-app.json');
+  
+  // Temporarily write a malformed JSON file into the project templates directory
+  fs.writeFileSync(badTemplatePath, '{ malformed json content', 'utf8');
+  
+  try {
+    // Load templates, ensuring loadTemplates encounters the bad JSON and continues safely
+    const loadedTemplates = loadTemplates();
+    
+    // Check whether the corrupted template was excluded and a valid template still loads
+    const hasBad = loadedTemplates.some(t => t.id === 'bad-template');
+    const hasGood = loadedTemplates.some(t => t.id === 'web-app');
+    
+    assert.strictEqual(hasBad, false, 'Malformed template must be ignored');
+    assert.strictEqual(hasGood, true, 'Valid templates must still load');
+    console.log('  ✔ Malformed templates handled gracefully without crashing.');
+  } finally {
+    // Ensure the temporary bad template file is always removed, even if assertions fail
+    if (fs.existsSync(badTemplatePath)) {
+      fs.unlinkSync(badTemplatePath);
+    }
+  }
 // Test 12: --version CLI Flag
  console.log('\n▶ Test 12: --version CLI Flag');
   const cliPath = path.join(__dirname, '..', 'bin', 'cli.js');
