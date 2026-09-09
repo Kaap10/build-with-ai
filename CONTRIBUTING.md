@@ -101,9 +101,14 @@ build-with-ai/
 │   └── ai-agent.json       # 14-step AI Agent & RAG Pipeline workflow
 ├── tests/
 │   ├── test-flow.js        # Comprehensive unit & integration test suite
-│   └── e2e-test.js         # End-to-end interactive terminal simulation
+│   ├── e2e-test.js         # End-to-end interactive terminal simulation
+│   └── test-pr-bot.js      # Automated PR review bot quality test suite
 ├── .github/
-│   ├── workflows/ci.yml    # Multi-OS (Ubuntu, macOS, Windows) CI matrix
+│   ├── scripts/
+│   │   └── pr-review-bot.js # Zero-API automated PR code review & quality scoring engine
+│   ├── workflows/
+│   │   ├── ci.yml          # Multi-OS (Ubuntu, macOS, Windows) CI matrix
+│   │   └── pr-review.yml   # Automated PR code review & quality scoring workflow
 │   └── ISSUE_TEMPLATE/     # Issue & feature request templates
 ├── CHANGELOG.md            # Semantic version release log
 ├── CODE_OF_CONDUCT.md      # Contributor Covenant Code of Conduct
@@ -130,6 +135,17 @@ build-with-ai/
    ```
 4. Push to your fork and open a Pull Request against the `main` branch.
 5. Complete the PR checklist provided in the pull request template.
+
+### Automated PR Quality Bot
+
+Every Pull Request is automatically analyzed by our built-in PR Quality Review Bot.
+The bot performs quality checks and provides instant feedback with a Quality Score (0-100):
+
+- **Green Flag (>= 90/100):** Ready for merge review.
+- **Yellow Flag (70 - 89/100):** Minor warnings or style improvements suggested.
+- **Red Flag (< 70/100):** Blocking issues detected (failing tests, deleted test regressions, scope bleed, or syntax errors).
+
+The bot automatically updates its review comment whenever you push new commits to your branch.
 
 ---
 
