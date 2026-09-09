@@ -69,6 +69,58 @@ async function runIsolatedClipboardFallback(moduleSource) {
 }
 
 async function runTests() {
+  // Context paths: preserve existing dot-separator semantics and value types.
+  const deepContext = {};
+  setByPath(deepContext, 'decisions.auth.oauth.providers.google.clientId', 'client-123');
+  assert.deepStrictEqual(deepContext, {
+    decisions: { auth: { oauth: { providers: { google: { clientId: 'client-123' } } } } }
+  });
+  assert.strictEqual(getByPath(deepContext, 'decisions.auth.oauth.providers.google.clientId'), 'client-123');
+  assert.strictEqual(getByPath(deepContext, 'decisions.auth.oauth.providers.missing.clientId'), undefined);
+
+  for (const parent of [undefined, null, 'old', 42, false]) {
+    const nested = { decisions: { auth: parent, database: 'SQLite' } };
+    setByPath(nested, 'decisions.auth.clientId', 'new');
+    assert.deepStrictEqual(nested, { decisions: { auth: { clientId: 'new' }, database: 'SQLite' } });
+  }
+  for (const value of ['', false, 0, null]) {
+    const nested = {};
+    setByPath(nested, 'decisions.value', value);
+    assert.strictEqual(getByPath(nested, 'decisions.value'), value);
+    assert.deepStrictEqual(flattenObject(nested), { 'decisions.value': value });
+  }
+
+  const specialKeys = { 'a.b': 'literal', a: { b: 'nested' } };
+  assert.strictEqual(getByPath(specialKeys, 'a.b'), 'nested', 'Dots are path separators, not literal key lookups');
+  setByPath(specialKeys, 'a.b', 'updated');
+  assert.deepStrictEqual(specialKeys, { 'a.b': 'literal', a: { b: 'updated' } });
+  setByPath(specialKeys, ' settings.oauth-provider.client_id@prod ', 'key');
+  assert.strictEqual(getByPath(specialKeys, ' settings.oauth-provider.client_id@prod '), 'key');
+  assert.deepStrictEqual(flattenObject({ 'a.b': 'literal' }), { 'a.b': 'literal' });
+
+  const arrayValue = [{ enabled: false }, ['nested', 0]];
+  const flattenInput = { decisions: { options: { retries: 0 }, providers: arrayValue, empty: {} } };
+  assert.deepStrictEqual(flattenObject(flattenInput), {
+    'decisions.options.retries': 0,
+    'decisions.providers': [{ enabled: false }, ['nested', 0]]
+  });
+  assert.strictEqual(flattenObject(flattenInput)['decisions.providers'], arrayValue, 'Nested arrays remain intact');
+  assert.deepStrictEqual(flattenObject({ options: { enabled: false } }, 'project'), {
+    'project.options.enabled': false
+  });
+  assert.deepStrictEqual(flattenInput, {
+    decisions: { options: { retries: 0 }, providers: [{ enabled: false }, ['nested', 0]], empty: {} }
+  }, 'Flattening does not mutate its input');
+  for (const emptyInput of [null, undefined, '', 0, false, {}]) {
+    assert.deepStrictEqual(flattenObject(emptyInput), {});
+  }
+  assert.strictEqual(getByPath({ decisions: null }, 'decisions.auth'), undefined);
+  assert.strictEqual(getByPath({}, ''), undefined);
+  const unchanged = { name: 'project' };
+  setByPath(unchanged, '', 'ignored');
+  assert.deepStrictEqual(unchanged, { name: 'project' });
+  console.log('Context path edge cases passed.');
+
   const remoteData = { type: 'remote-test', title: 'Remote test', steps: [{ id: 'first' }] };
   const responses = [
     { status: 200, body: JSON.stringify(remoteData), valid: true },
