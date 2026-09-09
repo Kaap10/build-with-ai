@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const vm = require('vm');
 const { execSync, spawnSync } = require('child_process');
 const https = require('https');
 
@@ -7,14 +8,43 @@ const EMOJI_REGEX = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F
 const BOT_SIGNATURE = '<!-- build-with-ai-pr-bot -->';
 
 /**
+ * Safely extracts file content from a git ref or local disk without modifying working tree.
+ * @param {string} filePath
+ * @param {string} [headRef=process.env.HEAD_REF]
+ * @param {string} [cwd=process.cwd()]
+ * @returns {string|null}
+ */
+function getFileContent(filePath, headRef = process.env.HEAD_REF, cwd = process.cwd()) {
+  if (headRef) {
+    try {
+      return execSync(`git show ${headRef}:${filePath}`, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] });
+    } catch {
+      // file might not exist in that ref
+    }
+  }
+  const fullPath = path.join(cwd, filePath);
+  if (fs.existsSync(fullPath)) {
+    try {
+      return fs.readFileSync(fullPath, 'utf8');
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+/**
  * Gets changed files and diff relative to base branch.
  * @param {string} [base='origin/main']
  * @returns {{ files: string[], diff: string }}
  */
 function getGitChanges(base = 'origin/main') {
+  const baseRef = process.env.BASE_REF || base;
+  const headRef = process.env.HEAD_REF || 'HEAD';
+
   try {
-    const diff = execSync(`git diff ${base}...HEAD`, { encoding: 'utf8' });
-    const nameStatus = execSync(`git diff --name-status ${base}...HEAD`, { encoding: 'utf8' });
+    const diff = execSync(`git diff ${baseRef}...${headRef}`, { encoding: 'utf8' });
+    const nameStatus = execSync(`git diff --name-status ${baseRef}...${headRef}`, { encoding: 'utf8' });
     const files = nameStatus
       .split('\n')
       .map(l => l.trim())
@@ -23,8 +53,8 @@ function getGitChanges(base = 'origin/main') {
     return { files, diff };
   } catch {
     try {
-      const diff = execSync('git diff HEAD~1...HEAD', { encoding: 'utf8' });
-      const nameStatus = execSync('git diff --name-status HEAD~1...HEAD', { encoding: 'utf8' });
+      const diff = execSync(`git diff ${base}...HEAD`, { encoding: 'utf8' });
+      const nameStatus = execSync(`git diff --name-status ${base}...HEAD`, { encoding: 'utf8' });
       const files = nameStatus
         .split('\n')
         .map(l => l.trim())
@@ -32,7 +62,18 @@ function getGitChanges(base = 'origin/main') {
         .map(l => l.split(/\s+/).pop());
       return { files, diff };
     } catch {
-      return { files: [], diff: '' };
+      try {
+        const diff = execSync('git diff HEAD~1...HEAD', { encoding: 'utf8' });
+        const nameStatus = execSync('git diff --name-status HEAD~1...HEAD', { encoding: 'utf8' });
+        const files = nameStatus
+          .split('\n')
+          .map(l => l.trim())
+          .filter(Boolean)
+          .map(l => l.split(/\s+/).pop());
+        return { files, diff };
+      } catch {
+        return { files: [], diff: '' };
+      }
     }
   }
 }
@@ -151,12 +192,13 @@ function checkScopeAndFileBleed(files = []) {
 function checkSyntaxAndReferences(files = [], diff = '', cwd = process.cwd()) {
   const errors = [];
   const jsFiles = files.filter(f => f.endsWith('.js'));
+  const headRef = process.env.HEAD_REF;
 
   for (const jsFile of jsFiles) {
-    const fullPath = path.join(cwd, jsFile);
-    if (fs.existsSync(fullPath)) {
+    const content = getFileContent(jsFile, headRef, cwd);
+    if (content !== null) {
       try {
-        execSync(`node --check "${fullPath}"`, { stdio: 'pipe' });
+        new vm.Script(content, { filename: jsFile });
       } catch (err) {
         errors.push(`Syntax error in ${jsFile}: ${err.message}`);
       }
@@ -233,12 +275,12 @@ function checkCodeCleanlinessAndEmojis(diff = '') {
 function checkTemplateSchema(files = [], cwd = process.cwd()) {
   const templateFiles = files.filter(f => f.startsWith('templates/') && f.endsWith('.json'));
   const errors = [];
+  const headRef = process.env.HEAD_REF;
 
   for (const tplFile of templateFiles) {
-    const fullPath = path.join(cwd, tplFile);
-    if (fs.existsSync(fullPath)) {
+    const raw = getFileContent(tplFile, headRef, cwd);
+    if (raw !== null) {
       try {
-        const raw = fs.readFileSync(fullPath, 'utf8');
         const data = JSON.parse(raw);
 
         if (!data.type || typeof data.type !== 'string') {
