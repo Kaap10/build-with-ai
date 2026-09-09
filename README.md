@@ -270,6 +270,45 @@ Three deterministic documentation files are generated:
 | `npx build-with-ai list` | List all available built-in templates and their total step counts. |
 | `npx build-with-ai reset` | Safely remove `.buildwithai/` state (never touches user code). |
 
+### Using `next --json` in Scripts
+ 
+[#using-next---json-in-scripts](#using-next---json-in-scripts)
+ 
+`npx build-with-ai next --json` prints the current step as structured JSON instead of the formatted terminal banner — handy for piping into other tools, editors, or custom scripts.
+ 
+**JSON fields:**
+ 
+| Field | Description |
+| :--- | :--- |
+| `step` | Current step number |
+| `totalSteps` | Total steps in the active template |
+| `title` | Step title |
+| `phase` | Phase this step belongs to (e.g. `Discovery`, `Tech Stack`) |
+| `goal` | Why this step matters |
+| `expectedOutput` | What the AI should produce |
+| `recommendedAI` | Suggested AI model(s) for this step |
+| `targetFiles` | Files this step is expected to create or edit |
+| `warnings` | Any unresolved prerequisites or placeholders |
+| `prompt` | The fully resolved prompt text to paste into your AI |
+ 
+**Extract just the prompt — Unix-like shells (bash/zsh), using `jq`:**
+ 
+```bash
+npx build-with-ai next --json | jq -r '.prompt'
+```
+ 
+**Extract just the prompt — Windows PowerShell:**
+ 
+```powershell
+npx build-with-ai next --json | ConvertFrom-Json | Select-Object -ExpandProperty prompt
+```
+ 
+**No `jq`? Use Node instead (works the same on Windows, macOS, and Linux):**
+ 
+```bash
+npx build-with-ai next --json | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>console.log(JSON.parse(d).prompt))"
+```
+
 ---
 
 ## Available Templates
