@@ -18,7 +18,8 @@
   "scripts": {
     "test": "node tests/test-flow.js",
     "test:e2e": "node tests/e2e-test.js",
-    "test:all": "node tests/test-flow.js && node tests/e2e-test.js"
+    "test:bot": "node tests/test-pr-bot.js",
+    "test:all": "node tests/test-flow.js && node tests/e2e-test.js && node tests/test-pr-bot.js"
   },
   "repository": {
     "type": "git",
