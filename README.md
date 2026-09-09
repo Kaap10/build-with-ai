@@ -92,7 +92,6 @@ npm install -g build-with-ai
 - **Custom Template Loading** — Load community templates from local JSON files or remote HTTPS URLs (`--template <path-or-url>`).
 - **Deterministic Documentation Export** — Generates complete `README.md`, `BUILD_LOG.md`, and `CONTEXT.md` documentation when finished.
 - **6 Built-in Production Templates** — Full-Stack Web App, REST API, SaaS MVP, Mobile App (Expo), Chrome Extension, and AI Agent & RAG Pipeline.
-- **Zero-API PR Quality Review Bot** — Built-in automated GitHub Actions code reviewer that evaluates PRs, runs test suites, detects regressions and scope bleed, and posts actionable quality reports.
 - **100% Local & Private** — No telemetry, no network calls to proprietary AI APIs, and zero vendor lock-in.
 
 ---
