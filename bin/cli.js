@@ -437,7 +437,13 @@ program
 
     const context = loadContext();
     const prev = getByPath(context, key);
-    setByPath(context, key, value);
+    let parsedValue = value;
+    try {
+      parsedValue = JSON.parse(value);
+    } catch {
+      // Ordinary text and invalid JSON remain strings.
+    }
+    setByPath(context, key, parsedValue);
     saveContext(context);
 
     console.log();

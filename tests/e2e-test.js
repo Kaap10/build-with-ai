@@ -1,4 +1,4 @@
-const { spawn, execSync } = require('child_process');
+const { spawn, execSync, execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -269,6 +269,27 @@ async function executeFullE2ETest() {
     assert.strictEqual(contextMissingRes.code, 0, 'Should exit normally for missing key too');
 
     report['Context key lookup'] = 'PASS';
+    const setCases = [
+      ['["Auth","Export"]', ['Auth', 'Export']],
+      ['{"enabled":true,"count":2}', { enabled: true, count: 2 }],
+      ['42', 42],
+      ['false', false],
+      ['null', null],
+      ['"123"', '123'],
+      ['PostgreSQL with Prisma ORM', 'PostgreSQL with Prisma ORM'],
+      ['{invalid JSON}', '{invalid JSON}'],
+      ['[]', []],
+      ['{}', {}]
+    ];
+    for (const [input, expected] of setCases) {
+      execFileSync(process.execPath, [CLI_BIN, 'set', 'decisions.testValue', input], {
+        cwd: testDir, encoding: 'utf8', timeout: 10000
+      });
+      const savedContext = JSON.parse(fs.readFileSync(path.join(testDir, '.buildwithai', 'context.json'), 'utf8'));
+      assert.deepStrictEqual(savedContext.decisions.testValue, expected, `set should preserve the value type for ${input}`);
+      assert.strictEqual(savedContext.decisions.database, 'SQLite with Prisma ORM', 'Other decisions must remain unchanged');
+    }
+    report['Set JSON values'] = 'PASS';
     console.log('   ✔ Context command correctly prints existing values and warns on missing keys.\n');
 
 
