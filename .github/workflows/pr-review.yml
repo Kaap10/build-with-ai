@@ -1,7 +1,7 @@
 name: PR Quality Review Bot
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened]
 
 permissions:
@@ -13,15 +13,13 @@ jobs:
     name: Automated PR Quality Gate & Review
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout base branch
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.base_ref }}
           fetch-depth: 0
 
-      - name: Fetch PR head
-        run: |
-          git fetch origin +refs/pull/${{ github.event.pull_request.number }}/head:pr-head
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -38,5 +36,4 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           BASE_REF: origin/${{ github.base_ref }}
-          HEAD_REF: pr-head
         run: node .github/scripts/pr-review-bot.js
