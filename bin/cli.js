@@ -49,6 +49,7 @@ program
   .description('Generate and copy the prompt for the current step.')
   .option('--raw', 'Print only the raw prompt string (useful for piping to other tools)')
   .option('--json', 'Print the full step data as JSON')
+  .option('--no-copy', 'Skip copying the prompt to the clipboard')
   .action(async (options) => {
     if (!isInitialized()) {
       logger.error('No project found in this directory. Run `npx build-with-ai init` first.');
@@ -121,9 +122,12 @@ program
       recommendedAI
     });
 
-    const copied = await copyToClipboard(resolvedPrompt);
+    const skipCopy = options.copy === false || process.env.BUILD_WITH_AI_NO_COPY === '1';
+    const copied = skipCopy ? false : await copyToClipboard(resolvedPrompt);
     console.log();
-    if (copied) {
+    if (skipCopy) {
+      console.log(pc.dim('Clipboard copy skipped.'));
+    } else if (copied) {
       console.log(pc.green(pc.bold('Prompt copied to clipboard')));
     } else {
       console.log(pc.yellow('Copy the prompt above and paste it into your AI assistant.'));

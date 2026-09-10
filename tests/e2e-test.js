@@ -177,6 +177,39 @@ async function executeFullE2ETest() {
     report['Next'] = 'PASS';
     report['Prompt resolution'] = 'PASS';
     report['Clipboard'] = 'PASS';
+    const copyCases = [
+      { args: [], env: '', copies: true },
+      { args: ['--no-copy'], env: '', copies: false },
+      { args: [], env: '1', copies: false },
+      { args: ['--no-copy'], env: '0', copies: false },
+      { args: [], env: '0', copies: true },
+      { args: ['--raw', '--no-copy'], env: '', copies: false, raw: true },
+      { args: ['--json', '--no-copy'], env: '1', copies: false, json: true }
+    ];
+    for (const testCase of copyCases) {
+      const script = `
+        const clipboard = require(${JSON.stringify(path.resolve(__dirname, '..', 'lib', 'clipboard.js'))});
+        clipboard.copyToClipboard = async () => { console.log('__CLIPBOARD_CALLED__'); return true; };
+        process.argv = [process.execPath, ${JSON.stringify(CLI_BIN)}, 'next', ...${JSON.stringify(testCase.args)}];
+        require(${JSON.stringify(CLI_BIN)});
+      `;
+      const output = execFileSync(process.execPath, ['-e', script], {
+        cwd: testDir,
+        encoding: 'utf8',
+        timeout: 10000,
+        env: { ...process.env, BUILD_WITH_AI_NO_COPY: testCase.env }
+      });
+      assert.strictEqual(output.includes('__CLIPBOARD_CALLED__'), testCase.copies, 'Clipboard invocation should respect the flag and environment');
+      assert(output.includes('Expense Tracker'), 'Prompt must still be generated');
+      if (testCase.json) {
+        assert.strictEqual(JSON.parse(output).step, 1, 'JSON output must remain parseable');
+      } else if (testCase.raw) {
+        assert(!output.includes('Clipboard copy skipped'), 'Raw output must not include clipboard hints');
+      } else if (!testCase.copies) {
+        assert(output.includes('Clipboard copy skipped'), 'Standard output should explain that copying was skipped');
+      }
+    }
+    report['Clipboard opt-out'] = 'PASS';
     console.log('   ✔ Prompt formatted, variables resolved, and clipboard copy verified.\n');
 
     // -------------------------------------------------------------
