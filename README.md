@@ -270,6 +270,15 @@ Three deterministic documentation files are generated:
 | `npx build-with-ai list` | List all available built-in templates and their total step counts. |
 | `npx build-with-ai reset` | Safely remove `.buildwithai/` state (never touches user code). |
 
+### Searching and Listing Templates
+
+Use `npx build-with-ai list --search api` (or `list -s api`) to search template
+IDs, titles, and descriptions without case sensitivity. Use `list --json` for
+a JSON array containing `id`, `title`, `description`, and `stepCount`.
+The options can be combined: `list -s api --json`. An unmatched search prints
+a message in text mode or `[]` in JSON mode. These commands do not require an
+initialized project.
+
 ### Disabling Clipboard Copy
 
 For headless or SSH sessions, use `next --no-copy`, or set

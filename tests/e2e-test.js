@@ -119,6 +119,29 @@ async function executeFullE2ETest() {
 
   try {
     // -------------------------------------------------------------
+    // Template discovery works before project initialization.
+    const listOutput = (args) => execFileSync(process.execPath, [CLI_BIN, 'list', ...args], {
+      cwd: testDir, encoding: 'utf8', timeout: 10000
+    });
+    const listedTemplates = JSON.parse(listOutput(['--json']));
+    const expectedTemplates = require('../lib/promptEngine').loadTemplates().map(({ id, title, description, stepCount }) => ({ id, title, description, stepCount }));
+    assert.deepStrictEqual(listedTemplates, expectedTemplates, 'JSON listing contains only the public summary fields in template order');
+    for (const [query, expectedId] of [
+      ['WEB-APP', 'web-app'],
+      ['Full-Stack Web Application', 'web-app'],
+      ['subscription', 'saas-mvp']
+    ]) {
+      const results = JSON.parse(listOutput(['--search', query, '--json']));
+      assert.deepStrictEqual(results.map(template => template.id), [expectedId], `Search should match ${query}`);
+    }
+    assert.deepStrictEqual(JSON.parse(listOutput(['-s', 'subscription', '--json'])).map(template => template.id), ['saas-mvp']);
+    const filteredText = listOutput(['--search', 'subscription']);
+    assert(filteredText.includes('Modern SaaS MVP'), 'Text mode shows matching templates');
+    assert(!filteredText.includes('Full-Stack Web Application'), 'Text mode excludes other templates');
+    assert.deepStrictEqual(JSON.parse(listOutput(['--search', 'no-template-matches-xyz', '--json'])), []);
+    assert(listOutput(['--search', 'no-template-matches-xyz']).includes('No templates match'), 'Empty text searches have a clear message');
+    assert.deepStrictEqual(JSON.parse(listOutput(['--search', '', '--json'])), listedTemplates);
+    report['Template list options'] = 'PASS';
     // Step 1: Fresh Start (no subcommand)
     // -------------------------------------------------------------
     console.log('🔹 1. Testing Fresh Start (no args in empty folder)...');

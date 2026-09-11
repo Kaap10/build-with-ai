@@ -558,14 +558,27 @@ program
 program
   .command('list')
   .description('List all available project templates and their step counts.')
-  .action(() => {
-    const templates = loadTemplates();
+  .option('-s, --search <query>', 'Filter templates by ID, title, or description')
+  .option('--json', 'Print template summaries as a JSON array')
+  .action((options) => {
+    const query = (options.search || '').toLowerCase();
+    const templates = loadTemplates().filter(template =>
+      !query || [template.id, template.title, template.description].some(value => String(value).toLowerCase().includes(query))
+    );
+    if (options.json) {
+      console.log(JSON.stringify(templates.map(({ id, title, description, stepCount }) => ({
+        id, title, description, stepCount
+      })), null, 2));
+      return;
+    }
     console.log();
     console.log(pc.bold(pc.cyan('AVAILABLE TEMPLATES:')));
     console.log(pc.dim('─'.repeat(55)));
 
     if (templates.length === 0) {
-      console.log(pc.yellow('No templates found in templates directory.'));
+      console.log(pc.yellow(options.search
+        ? `No templates match "${options.search}".`
+        : 'No templates found in templates directory.'));
       return;
     }
 
