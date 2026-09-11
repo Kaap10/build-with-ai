@@ -256,6 +256,7 @@ Three deterministic documentation files are generated:
 | `npx build-with-ai init` | Start interactive setup wizard (template, experience, project idea). |
 | `npx build-with-ai init --template <path\|url>` | Load a custom template from a local file path or remote HTTPS URL. |
 | `npx build-with-ai next` | Generate and clipboard-copy the prompt for the active step. |
+| `npx build-with-ai next --no-copy` | Generate the prompt without accessing the clipboard. |
 | `npx build-with-ai next --raw` | Print only the raw prompt string (ideal for scripting and CLI pipes). |
 | `npx build-with-ai next --json` | Print complete step metadata as structured JSON. |
 | `npx build-with-ai done` | Record decisions into `context.json`, archive response, and advance step. |
@@ -268,6 +269,14 @@ Three deterministic documentation files are generated:
 | `npx build-with-ai export` | Generate `README.md`, `BUILD_LOG.md`, and `.buildwithai/CONTEXT.md`. |
 | `npx build-with-ai list` | List all available built-in templates and their total step counts. |
 | `npx build-with-ai reset` | Safely remove `.buildwithai/` state (never touches user code). |
+
+### Disabling Clipboard Copy
+
+For headless or SSH sessions, use `next --no-copy`, or set
+`BUILD_WITH_AI_NO_COPY=1` in the environment to disable clipboard copying by
+default. The prompt is still printed. Other environment values leave copying
+enabled unless `--no-copy` is provided. `--raw` and `--json` continue to print
+only their requested output, without clipboard hints.
 
 ### Using `next --json` in Scripts
  
