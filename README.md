@@ -4,7 +4,7 @@
 
 <div align="center">
 
-[![CI](https://github.com/Kaap10/build-with-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/Kaap10/build-with-ai/actions/workflows/ci.yml)
+[![CI](https://github.com/picado-labs/build-with-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/picado-labs/build-with-ai/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/build-with-ai.svg?style=flat&color=3b82f6)](https://www.npmjs.com/package/build-with-ai)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Node >= 16](https://img.shields.io/badge/node-%3E%3D16.0.0-f59e0b.svg)](https://nodejs.org)
@@ -364,7 +364,7 @@ my-project/
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/Kaap10/build-with-ai.git
+git clone https://github.com/picado-labs/build-with-ai.git
 cd build-with-ai
 
 # 2. Install dependencies
