@@ -517,6 +517,17 @@ async function executeFullE2ETest() {
   const allPass = Object.values(report).every(v => v === 'PASS');
   console.log(`OVERALL STATUS: ${allPass ? 'PASS' : 'FAIL'}`);
   console.log('===============================================================');
+
+  // Test for export --dry-run
+    const dryRunResult = runSync(['export', '--dry-run'], testDir);
+    
+    assert(dryRunResult.stdout.includes('README.md'));
+    assert(dryRunResult.stdout.includes('BUILD_LOG.md'));
+    assert(dryRunResult.stdout.includes('.buildwithai/CONTEXT.md'));
+  
+    const readmeExists = fs.existsSync(path.join(testDir, 'README.md'));
+    assert(!readmeExists);
 }
 
-executeFullE2ETest();
+
+  executeFullE2ETest();

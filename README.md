@@ -384,3 +384,10 @@ build-with-ai
 ## License
 
 MIT © [build-with-ai contributors](LICENSE)
+
+#NON-INTERACTIVE JSON output
+If you want to use this tool in automated script or pipelines , you can pass the `--json` flag.
+
+EXAMPLE:
+```bash
+npx build-with-ai next --json

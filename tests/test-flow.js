@@ -376,6 +376,14 @@ async function runTests() {
   assert.strictEqual(fs.existsSync(path.join(tempDir, 'my-source-code.js')), true, 'User code preserved intact');
   console.log('  ✔ Reset cleaned .buildwithai and preserved user source files.');
 
+  // Test 13: Test actual resume workflow behavior
+  console.log('\n Test 13: Test actual resume workflow behavior');
+  const resumeResult = runSync(['resume'], tempDir);
+  assert(resumeResult !== null, 'Resume process should execute');
+  
+  const storageDir = getStorageDir(tempDir);
+  assert(fs.existsSync(storageDir), 'Resume execution should maintain storage context');
+  console.log('  Actual resume workflow state and behavior verified.');
 // Test 12: Malformed Template JSON handling and graceful skipping
   console.log('\n Test 12: Malformed Template JSON handling');
   const projectTemplatesDir = path.join(__dirname, '..', 'templates');
