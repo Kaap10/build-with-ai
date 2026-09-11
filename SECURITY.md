@@ -29,7 +29,7 @@ If you discover a security vulnerability in `build-with-ai`, please do **not** o
 
 Instead, please report the vulnerability privately by:
 
-1. Opening a private security advisory on GitHub under the **Security** tab of the repository (`https://github.com/picado-labs/build-with-ai/security/advisories/new`).
+1. Opening a private security advisory on GitHub under the **Security** tab of the repository (`https://github.com/PicadoLabs/build-with-ai/security/advisories/new`).
 2. Providing a detailed description of the vulnerability, steps to reproduce, and potential impact.
 
 ### What to Expect

@@ -22,12 +22,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/picado-labs/build-with-ai.git"
+    "url": "git+https://github.com/PicadoLabs/build-with-ai.git"
   },
   "bugs": {
-    "url": "https://github.com/picado-labs/build-with-ai/issues"
+    "url": "https://github.com/PicadoLabs/build-with-ai/issues"
   },
-  "homepage": "https://github.com/picado-labs/build-with-ai#readme",
+  "homepage": "https://github.com/PicadoLabs/build-with-ai#readme",
   "keywords": [
     "ai",
     "cli",
@@ -45,7 +45,7 @@
     "zero-api"
   ],
   "author": "build-with-ai contributors",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "engines": {
     "node": ">=16.0.0"
   },

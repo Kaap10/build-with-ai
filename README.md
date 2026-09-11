@@ -4,9 +4,9 @@
 
 <div align="center">
 
-[![CI](https://github.com/picado-labs/build-with-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/picado-labs/build-with-ai/actions/workflows/ci.yml)
+[![CI](https://github.com/PicadoLabs/build-with-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/PicadoLabs/build-with-ai/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/build-with-ai.svg?style=flat&color=3b82f6)](https://www.npmjs.com/package/build-with-ai)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node >= 16](https://img.shields.io/badge/node-%3E%3D16.0.0-f59e0b.svg)](https://nodejs.org)
 [![Zero API Keys](https://img.shields.io/badge/AI_API-None_(100%25_Local)-8b5cf6.svg)](README.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
@@ -351,36 +351,33 @@ my-project/
 
 ---
 
-## Open Source & Community
+## Contributing
 
-`build-with-ai` is free and open-source software under the [MIT License](LICENSE).
+We welcome contributions from the community. Please review [CONTRIBUTING.md](CONTRIBUTING.md) for details on our workflow, coding standards, and pull request process.
 
-- **Contributing Guide:** See [CONTRIBUTING.md](CONTRIBUTING.md) for local setup, template authoring schema, and PR guidelines.
-- **Code of Conduct:** See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
-- **Security Policy:** See [SECURITY.md](SECURITY.md).
-- **Changelog:** See [CHANGELOG.md](CHANGELOG.md).
+Please also read our [Code of Conduct](CODE_OF_CONDUCT.md).
 
-### Local Development Setup
+---
 
-```bash
-# 1. Clone repository
-git clone https://github.com/picado-labs/build-with-ai.git
-cd build-with-ai
+## Security
 
-# 2. Install dependencies
-npm install
+Security is critical to build-with-ai. If you discover a vulnerability, please report it privately by emailing [picadolabs@gmail.com](mailto:picadolabs@gmail.com). For more information, see [SECURITY.md](SECURITY.md).
 
-# 3. Run test suites
-npm test
-npm run test:e2e
+---
 
-# 4. Link CLI globally for local testing
-npm link
-build-with-ai
-```
+## Community & Maintainers
+
+build-with-ai is maintained by [PicadoLabs](https://picadolabs.me).
+
+- **Maintainer:** https://github.com/Kaap10
+- **GitHub Organization:** https://github.com/PicadoLabs
+- **Website:** https://picadolabs.me
+- **Contact & Inquiries:** [picadolabs@gmail.com](mailto:picadolabs@gmail.com)
 
 ---
 
 ## License
 
-MIT © [build-with-ai contributors](LICENSE)
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2026 PicadoLabs.

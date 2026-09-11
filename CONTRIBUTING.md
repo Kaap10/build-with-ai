@@ -198,16 +198,16 @@ You can use these placeholders anywhere inside the `prompt` string:
 
 ## Reporting Bugs & Feature Requests
 
-- **Bug Reports:** Open an issue using our [Bug Report Template](https://github.com/picado-labs/build-with-ai/issues/new?template=bug_report.md).
-- **Feature Requests:** Suggest ideas via our [Feature Request Template](https://github.com/picado-labs/build-with-ai/issues/new?template=feature_request.md).
-- **Template Proposals:** Propose new workflows via the [Template Proposal Template](https://github.com/picado-labs/build-with-ai/issues/new?template=template_proposal.md).
+- **Bug Reports:** Open an issue using our [Bug Report Template](https://github.com/PicadoLabs/build-with-ai/issues/new?template=bug_report.md).
+- **Feature Requests:** Suggest ideas via our [Feature Request Template](https://github.com/PicadoLabs/build-with-ai/issues/new?template=feature_request.md).
+- **Template Proposals:** Propose new workflows via the [Template Proposal Template](https://github.com/PicadoLabs/build-with-ai/issues/new?template=template_proposal.md).
 
 ---
 
 ## Good First Issues
 
 Looking for an easy entry point?
-- Browse the [open Good First Issues on GitHub](https://github.com/picado-labs/build-with-ai/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+- Browse the [open Good First Issues on GitHub](https://github.com/PicadoLabs/build-with-ai/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 - Refine wording or add missing `targetFiles` / `recommendedAI` to existing templates.
 - Write a new specialized template for your favorite programming framework.
 - Add test coverage for new edge cases in `tests/`.

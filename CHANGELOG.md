@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.1] - 2026-08-29
 
 ### Changed
+- Standardized project licensing under single MIT License.
+- Redesigned documentation and repository URLs to align with PicadoLabs ecosystem.
 - Normalized repository line endings via `.gitattributes`.
 - Verified and updated documentation assets for open-source registry readiness.
 
@@ -28,9 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `PHASE`, `RECOMMENDED AI`, and `TARGET FILES` fields to step displays for clearer developer guidance.
 - **Custom Template Loading:**
   - Added `--template <path-or-url>` flag to `init` command, supporting local `.json` files and remote HTTPS URLs.
-- **4 New Workflow Templates:**
+- **5 New Workflow Templates:**
   - `saas-mvp.json` (15 steps): Modern SaaS with Next.js 14, Supabase, Stripe, and Resend.
   - `mobile-app.json` (15 steps): Cross-platform mobile development with React Native, Expo Router, and EAS Build.
+  - `flutter-app.json` (16 steps): Cross-platform mobile development with Flutter, Dart, and Supabase/Firebase.
   - `chrome-extension.json` (12 steps): Browser extensions using Manifest V3, Vite, and React.
   - `ai-agent.json` (14 steps): AI Agent & RAG Pipeline with LangChain, vector databases, and FastAPI/Express.
 - **Open Source Governance:**
